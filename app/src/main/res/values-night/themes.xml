@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.CargaExpress" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimaryDark">@color/blue_color</item>
+        <item name="colorPrimary">@color/blue_color</item>
+        <item name="colorAccent">@color/blue_color</item>
+    </style>
+</resources>

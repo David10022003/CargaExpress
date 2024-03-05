@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="co.edu.unipiloto.cargaexpress.Ingreso">
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="top"
+        android:layout_weight="0.4"
+        android:background="@mipmap/logo"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            app:boxStrokeColor="@color/blue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/cedulaIngreso"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="@string/usuario"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            app:boxStrokeColor="@color/blue">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/contrasenaIngreso"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="@string/contra"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <Button
+                android:id="@+id/buttonLogin"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:textSize="15dp"
+                android:text="@string/btn_iniSesion"
+                android:onClick="ingreso"
+                app:backgroundTint="@color/blue_color"/>
+
+            <Button
+                android:id="@+id/buttonRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textSize="15dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/btn_registro"
+                app:backgroundTint="@color/white"
+                android:textColor="@color/blue"
+                android:onClick="registro"/>
+
+    </LinearLayout>
+
+</LinearLayout>

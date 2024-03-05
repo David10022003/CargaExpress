@@ -1,0 +1,19 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.CargaExpress" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimaryDark">@color/blue_color</item>
+        <item name="colorPrimary">@color/blue_color</item>
+        <item name="colorAccent">@color/blue_color</item>
+    </style>
+
+    <style name="Theme.CargaExpress" parent="Base.Theme.CargaExpress" />
+
+    <style name="Theme.CargaExpress.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.CargaExpress.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.CargaExpress.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Carga Express</string>
+    <string name="usuario">Cedula</string>
+    <string name="contra">Contraseña</string>
+    <string name="btn_iniSesion">Iniciar Sesión</string>
+    <string name="btn_registro">Crear Cuenta</string>
+    <string name="cuentanosSobreTi">Cuentanos sobre ti</string>
+    <string name="nombre">Nombre</string>
+    <string name="apellidos">Apellidos</string>
+    <string name="cedula">Cedula</string>
+    <string-array name="identificacion">
+        <item>C.C</item>
+        <item>C.E</item>
+    </string-array>
+    <string name="radioComerciante">Comerciante</string>
+    <string name="radioConductor">Conductor</string>
+    <string name="radioPropietario">Propietario de camion</string>
+    <string name="soy">Soy:</string>
+    <string name="title_activity_carga_express">carga_express</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+</resources>

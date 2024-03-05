@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "398662339722",
+    "project_id": "cargaexpress-d0ec7",
+    "storage_bucket": "cargaexpress-d0ec7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:398662339722:android:fe7f08c4afbdcb7e583173",
+        "android_client_info": {
+          "package_name": "co.edu.unipiloto.cargaexpress"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEkpUYF6Nxwrys3I6xVXnWDXC6DI2Mbjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
