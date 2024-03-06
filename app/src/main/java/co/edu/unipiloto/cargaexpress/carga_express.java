@@ -17,7 +17,10 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.w3c.dom.Text;
+
 import co.edu.unipiloto.cargaexpress.databinding.ActivityCargaExpressBinding;
+import co.edu.unipiloto.cargaexpress.databinding.FragmentAcountBinding;
 
 public class carga_express extends AppCompatActivity {
 

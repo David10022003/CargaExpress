@@ -7,7 +7,7 @@
     <string name="cuentanosSobreTi">Cuentanos sobre ti</string>
     <string name="nombre">Nombre</string>
     <string name="apellidos">Apellidos</string>
-    <string name="cedula">Cedula</string>
+    <string name="email">Correo Electronico</string>
     <string-array name="identificacion">
         <item>C.C</item>
         <item>C.E</item>
@@ -32,4 +32,17 @@
     <string name="cuenta_rol">Rol</string>
     <string name="menu_cuenta">Mi cuenta</string>
     <string name="menu_inicio">Inicio</string>
+    <string name="infoTuNuevoCamion">Información sobre tu nuevo camión</string>
+    <string name="nTarjetaPropiedad">N° tarjeta de propiedad</string>
+    <string name="placa">Placa</string>
+    <string name="modelo">Modelo</string>
+    <string name="capacidad">Capacidad</string>
+    <string name="kg">Kg</string>
+    <string name="conductorCamión">Conductor del camión</string>
+    <string-array name="quienConduce">
+        <item>Yo soy el conductor</item>
+        <item>Persona diferente</item>
+    </string-array>
+    <string name="cedulaConductor">Cedula conductor</string>
+    <string name="btn_registrarCamion">Registrar camión</string>
 </resources>

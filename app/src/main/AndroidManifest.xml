@@ -13,6 +13,9 @@
         android:theme="@style/Theme.CargaExpress"
         tools:targetApi="31">
         <activity
+            android:name=".registroCamion"
+            android:exported="false" />
+        <activity
             android:name=".MisPublicaciones"
             android:exported="false" />
         <activity
