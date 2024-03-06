@@ -19,9 +19,6 @@
             android:name=".MisCamiones"
             android:exported="false" />
         <activity
-            android:name=".Ver"
-            android:exported="false" />
-        <activity
             android:name=".carga_express"
             android:exported="false"
             android:label="@string/title_activity_carga_express"

@@ -23,7 +23,13 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
+    <string name="miCuenta">Mi cuenta</string>
+    <string name="cuenta_nombre">Nombre(s)</string>
+    <string name="cuenta_apellido">Apellido(s)</string>
+    <string name="cuenta_tipo">Tipo Documento</string>
+    <string name="cuenta_cedula">Numero de documento</string>
+    <string name="cuenta_email">Correo Electronico</string>
+    <string name="cuenta_rol">Rol</string>
     <string name="menu_cuenta">Mi cuenta</string>
     <string name="menu_inicio">Inicio</string>
 </resources>

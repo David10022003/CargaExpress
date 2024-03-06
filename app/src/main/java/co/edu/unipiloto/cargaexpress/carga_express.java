@@ -87,8 +87,12 @@ public class carga_express extends AppCompatActivity {
     public void verElementos(View view) {
         if(user.getRol().equals("Comerciante")){
             Intent intent = new Intent(this, MisPublicaciones.class);
+            intent.putExtra("documento", user.getCedula());
+            startActivity(intent);
         } else if (user.getRol().equals("Propietario de camion")) {
             Intent intent = new Intent(this, MisCamiones.class);
+            intent.putExtra("documento", user.getCedula());
+            startActivity(intent);
 
         }
     }
