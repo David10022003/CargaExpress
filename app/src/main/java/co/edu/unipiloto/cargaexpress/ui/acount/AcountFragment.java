@@ -1,4 +1,4 @@
-package co.edu.unipiloto.cargaexpress.ui.slideshow;
+package co.edu.unipiloto.cargaexpress.ui.acount;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,23 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import co.edu.unipiloto.cargaexpress.databinding.FragmentSlideshowBinding;
+import co.edu.unipiloto.cargaexpress.databinding.FragmentAcountBinding;
 
-public class SlideshowFragment extends Fragment {
 
-    private FragmentSlideshowBinding binding;
+public class AcountFragment extends Fragment {
+
+    private FragmentAcountBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        SlideshowViewModel slideshowViewModel =
-                new ViewModelProvider(this).get(SlideshowViewModel.class);
+        AcountViewModel acountViewModel =
+                new ViewModelProvider(this).get(AcountViewModel.class);
 
-        binding = FragmentSlideshowBinding.inflate(inflater, container, false);
+        binding = FragmentAcountBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textSlideshow;
-        slideshowViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textView = binding.textAcount;
+        acountViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

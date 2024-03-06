@@ -1,6 +1,14 @@
 package co.edu.unipiloto.cargaexpress;
 
-public class Usuario {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Size;
+
+import com.google.firebase.firestore.auth.User;
+
+public class Usuario implements Parcelable {
     private String cedula;
     private String nombre;
     private String apellidos;
@@ -76,4 +84,43 @@ public class Usuario {
     public void setRol(String rol) {
         this.rol = rol;
     }
+
+    protected Usuario(Parcel in){
+        cedula = in.readString();
+        nombre = in.readString();
+        apellidos = in.readString();
+        tipoDocumento = in.readString();
+        email = in.readString();
+        contra = in.readString();
+        rol = in.readString();
+
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(cedula);
+        dest.writeString(nombre);
+        dest.writeString(apellidos);
+        dest.writeString(tipoDocumento);
+        dest.writeString(email);
+        dest.writeString(contra);
+        dest.writeString(rol);
+    }
+
+    public static final Creator<Usuario> CREATOR = new Creator<Usuario>() {
+        @Override
+        public Usuario createFromParcel(Parcel in) {
+            return new Usuario(in);
+        }
+
+        @Override
+        public Usuario[] newArray(int size) {
+            return new Usuario[size];
+        }
+    };
+
 }

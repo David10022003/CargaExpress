@@ -8,18 +8,13 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="co.edu.unipiloto.cargaexpress.ui.home.HomeFragment"
-        android:label="@string/menu_home"
+        android:label="@string/menu_inicio"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="co.edu.unipiloto.cargaexpress.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_acount"
+        android:name="co.edu.unipiloto.cargaexpress.ui.acount.AcountFragment"
+        android:label="@string/menu_cuenta"
+        tools:layout="@layout/fragment_acount" />
 
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="co.edu.unipiloto.cargaexpress.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
 </navigation>
