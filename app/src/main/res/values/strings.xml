@@ -47,4 +47,27 @@
     <string name="btn_registrarCamion">Registrar camión</string>
     <string name="mis_camiones">Mis Camiones</string>
     <string name="agregar_camion">Agregar camion</string>
+    <string name="solicitudTransporte">Solicitud de transporte de carga</string>
+    <string name="tipoCarga_label">Tipo de carga:</string>
+    <string-array name="tiposCarga">
+        <item>Mercancia sólida</item>
+        <item>Productos agricolas</item>
+    </string-array>
+    <string name="dimensiones">Dimensiones</string>
+    <string name="peso">Peso</string>
+    <string name="alto">Alto</string>
+    <string name="ancho">Ancho</string>
+    <string name="profundidad">Profundidad</string>
+    <string name="m">m</string>
+    <string name="direccionOrigen">Dirección de origen</string>
+    <string name="direccionDestino">Dirección de destino</string>
+    <string name="ciudad">Ciudad</string>
+    <string name="fechaRecogida">Fecha de recogida</string>
+    <string name="hora">Hora</string>
+    <string name="fechaEntrega">Fecha de entrega</string>
+    <string name="especificacionesAdicionales">Especificaciones adicionales</string>
+    <string name="aclaracionesAlTransportador">Aclaraciones adicionales para el transportador</string>
+    <string name="btn_publicarSolicitud">Publicar solicitud</string>
+    <string name="mis_publicaciones">Mis Cargas</string>
+    <string name="agregar_carga">Agregar carga</string>
 </resources>

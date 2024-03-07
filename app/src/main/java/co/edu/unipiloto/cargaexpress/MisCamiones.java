@@ -112,7 +112,8 @@ public class MisCamiones extends AppCompatActivity {
     private void agregarConductor(String placa) {
         final EditText inputEditText = new EditText(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Ingrese la cedula del conductor para: " + placa).setView(inputEditText)
+        builder.setTitle("Ingrese la cedula del conductor para " + placa+ " :").setView(inputEditText)
+
                 .setPositiveButton("Buscar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         String userInput = inputEditText.getText().toString();
@@ -162,7 +163,7 @@ public class MisCamiones extends AppCompatActivity {
 
         // Crear y mostrar otro AlertDialog con texto y botones
         AlertDialog.Builder innerBuilder = new AlertDialog.Builder(MisCamiones.this);
-        innerBuilder.setMessage("¿Desea agregar como conductor a: \n"+texto+"?");
+        innerBuilder.setMessage("¿Desea agregar?: \n"+texto);
         innerBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
