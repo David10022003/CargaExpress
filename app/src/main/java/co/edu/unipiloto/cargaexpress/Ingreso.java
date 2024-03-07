@@ -98,7 +98,7 @@ public class Ingreso extends AppCompatActivity {
                     QuerySnapshot querySnapshot = task.getResult();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         DocumentSnapshot document = querySnapshot.getDocuments().get(0);
-                        user = new Usuario(document.getString("cedula"), document.getString("nombre"), document.getString("apellidos"),
+                        user = new Usuario(document.getId(), document.getString("nombre"), document.getString("apellidos"),
                                 document.getString("tipoDocumento"), document.getString("email"), document.getString("contra"), document.getString("rol"));
                         guardarSesion(cedula, password);
                         mainCarga();

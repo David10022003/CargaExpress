@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import co.edu.unipiloto.cargaexpress.Usuario;
+
 public class AcountViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -20,14 +21,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.w3c.dom.Text;
 
 import co.edu.unipiloto.cargaexpress.databinding.ActivityCargaExpressBinding;
+import co.edu.unipiloto.cargaexpress.databinding.AppBarCargaExpressBinding;
+import co.edu.unipiloto.cargaexpress.databinding.ContentCargaExpressBinding;
 import co.edu.unipiloto.cargaexpress.databinding.FragmentAcountBinding;
+import co.edu.unipiloto.cargaexpress.ui.acount.AcountFragment;
 
 public class carga_express extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityCargaExpressBinding binding;
 
-    private Usuario user;
+    public static Usuario user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

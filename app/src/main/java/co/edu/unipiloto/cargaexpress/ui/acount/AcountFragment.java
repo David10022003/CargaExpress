@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import co.edu.unipiloto.cargaexpress.Usuario;
+import co.edu.unipiloto.cargaexpress.carga_express;
 import co.edu.unipiloto.cargaexpress.databinding.FragmentAcountBinding;
 
 
@@ -24,9 +26,7 @@ public class AcountFragment extends Fragment {
 
         binding = FragmentAcountBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        //final TextView textView;
-        //acountViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        datosUsuario(carga_express.user);
         return root;
     }
 
@@ -34,5 +34,14 @@ public class AcountFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public  void datosUsuario(Usuario user){
+        binding.textView3.setText(user.getNombre());
+        binding.textView5.setText(user.getApellidos());
+        binding.textView7.setText(user.getTipoDocumento());
+        binding.textView9.setText(user.getCedula());
+        binding.textView11.setText(user.getEmail());
+        binding.textView13.setText(user.getRol());
     }
 }

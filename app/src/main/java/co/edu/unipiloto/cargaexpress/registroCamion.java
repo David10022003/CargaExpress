@@ -15,24 +15,23 @@ import java.util.Map;
 public class registroCamion extends AppCompatActivity {
 
     private FirebaseFirestore database;
+    private String cedulaPropietario = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro_camion);
         database = FirebaseFirestore.getInstance();
+        Intent intent = getIntent();
+        cedulaPropietario = intent.getStringExtra("documento");
+
     }
 
     public void registrarCamion (View view) {
-        Intent intent = getIntent();
-        String nCedulaConductor;
-        int cedulaPropietario = 0;//intent.getStringArrayExtra("documento");
         TextInputEditText nTarjetaPropiedad = (TextInputEditText) findViewById(R.id.nTarjetaPropiedad);
         TextInputEditText placa = (TextInputEditText) findViewById(R.id.placa);
         TextInputEditText modelo = (TextInputEditText) findViewById(R.id.modelo);
         TextInputEditText capacidad = (TextInputEditText) findViewById(R.id.capacidad);
-        Spinner conductor = (Spinner) findViewById(R.id.conductor);
-        TextInputEditText cedulaConductor = (TextInputEditText) findViewById(R.id.cedulaConductor);
 
         if(nTarjetaPropiedad.getText().toString().isEmpty()){
             nTarjetaPropiedad.setError("Debe ingresar una tarjeta de propiedad valida");
@@ -54,20 +53,9 @@ public class registroCamion extends AppCompatActivity {
             capacidad.requestFocus();
             return;
         }
-        if(conductor.getSelectedItem().toString().equalsIgnoreCase("Yo soy el conductor")){
-            nCedulaConductor = String.valueOf(cedulaPropietario);
-        }
-        else {
-            if(cedulaConductor.getText().toString().isEmpty()){
-                //Verificar que la cedula este en la BD
-                cedulaConductor.setError("Debe ingresar una cedula valida");
-                cedulaConductor.requestFocus();
-                return;
-            }
-            nCedulaConductor = cedulaConductor.getText().toString();
-        }
+
         crearCamionDocument(Integer.parseInt(nTarjetaPropiedad.getText().toString()), placa.getText().toString(), Integer.parseInt(modelo.getText().toString()),
-                Integer.parseInt(capacidad.getText().toString()), Integer.parseInt(nCedulaConductor), cedulaPropietario);
+                Integer.parseInt(capacidad.getText().toString()), 0, Integer.parseInt(cedulaPropietario));
         camionView(view);
     }
 
@@ -82,7 +70,8 @@ public class registroCamion extends AppCompatActivity {
     }
 
     public void camionView (View view){
-        //Intent intent = new Intent(this, );
-        //startActivity(intent);
+        Intent intent = new Intent(this, MisCamiones.class);
+        intent.putExtra("documento", cedulaPropietario);
+        startActivity(intent);
     }
 }

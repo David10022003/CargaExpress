@@ -45,4 +45,6 @@
     </string-array>
     <string name="cedulaConductor">Cedula conductor</string>
     <string name="btn_registrarCamion">Registrar camión</string>
+    <string name="mis_camiones">Mis Camiones</string>
+    <string name="agregar_camion">Agregar camion</string>
 </resources>
