@@ -45,7 +45,7 @@
         android:layout_marginHorizontal="16dp">
 
         <TableLayout
-            android:id="@+id/table_layout"
+            android:id="@+id/tabla_publicaciones"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stretchColumns="*"
@@ -63,6 +63,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Fecha Publicacion"
+                    android:textColor="#FFFFFF"
+                    android:gravity="center"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Camion"
                     android:textColor="#FFFFFF"
                     android:gravity="center"
                     android:textStyle="bold"/>
