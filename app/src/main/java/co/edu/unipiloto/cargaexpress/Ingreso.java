@@ -43,8 +43,6 @@ public class Ingreso extends AppCompatActivity {
         preferences = this.getPreferences(Context.MODE_PRIVATE);
         editor = preferences.edit();
         database = FirebaseFirestore.getInstance();
-        iniciarSesion();
-
     }
 
     public void registro(View view) {
@@ -53,18 +51,11 @@ public class Ingreso extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void guardarSesion(String cedula, String password) {
-        editor.putString("user", cedula);
-        editor.putString("password", password);
-        editor.apply();
-    }
 
-    private void iniciarSesion(){
-        if(!this.preferences.getString("user", "").equals("") && !this.preferences.getString("password", "").equals(""))
-            generarIngreso(this, this.preferences.getString("user", ""), this.preferences.getString("password", ""));
-    }
 
-    public void mainCarga() {
+
+
+    private void mainCarga() {
         Intent intent = new Intent(this, carga_express.class);
         intent.putExtra("user", user);
         startActivity(intent);
@@ -73,6 +64,8 @@ public class Ingreso extends AppCompatActivity {
     public void ingreso(View view) {
         TextInputEditText cedula = (TextInputEditText) findViewById(R.id.cedulaIngreso);
         TextInputEditText contra = (TextInputEditText) findViewById(R.id.contrasenaIngreso);
+        cedula.setError(null);
+        contra.setError(null);
         if(cedula.getText().toString().isEmpty()) {
             cedula.setError("Debe ingresar un numero de cedula valido");
             cedula.requestFocus();
@@ -84,11 +77,11 @@ public class Ingreso extends AppCompatActivity {
             return;
         }
 
-        generarIngreso(this ,cedula.getText().toString(), contra.getText().toString());
+        generarIngreso(cedula.getText().toString(), contra.getText().toString());
 
     }
 
-    private void generarIngreso(Context context, String cedula, String password) {
+    private void generarIngreso(String cedula, String password) {
         String texto = "El usuario no se encuentra registrado";
         Query query = database.collection("usuarios").whereEqualTo(FieldPath.documentId(), cedula).whereEqualTo("contra", password);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -100,10 +93,10 @@ public class Ingreso extends AppCompatActivity {
                         DocumentSnapshot document = querySnapshot.getDocuments().get(0);
                         user = new Usuario(document.getId(), document.getString("nombre"), document.getString("apellidos"),
                                 document.getString("tipoDocumento"), document.getString("email"), document.getString("contra"), document.getString("rol"));
-                        guardarSesion(cedula, password);
+
                         mainCarga();
                     } else {
-                        Toast.makeText(context, "El usuario no se encuentra registrado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Ingreso.this, "El usuario no se encuentra registrado", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else {

@@ -26,21 +26,21 @@
             android:exported="false" />
         <activity
             android:name=".carga_express"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_carga_express"
-            android:theme="@style/Theme.CargaExpress.NoActionBar" />
-        <activity
-            android:name=".Registro"
-            android:exported="false" />
-        <activity
-            android:name=".Ingreso"
-            android:exported="true">
+            android:theme="@style/Theme.CargaExpress.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Registro"
+            android:exported="false" />
+        <activity
+            android:name=".Ingreso"
+            android:exported="false" />
     </application>
 
 </manifest>

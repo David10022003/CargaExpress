@@ -48,6 +48,11 @@ public class Registro extends AppCompatActivity {
         TextInputEditText email = (TextInputEditText) findViewById(R.id.correoRegistro);
         TextInputEditText contra = (TextInputEditText) findViewById(R.id.contrasenaRegistro);
         RadioGroup rol = (RadioGroup) findViewById(R.id.rol);
+        nombre.setError(null);
+        apellidos.setError(null);
+        cedula.setError(null);
+        email.setError(null);
+        contra.setError(null);
         if(nombre.getText().toString().isEmpty()) {
             nombre.setError("Debe ingresar un nombre valido");
             nombre.requestFocus();

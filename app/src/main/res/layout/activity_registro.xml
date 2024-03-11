@@ -1,98 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="co.edu.unipiloto.cargaexpress.Registro">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <ImageView
+        android:id="@+id/imageViewBackground"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="@color/blue"
-        android:layout_gravity="start">
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:alpha="0.1"
+        android:src="@mipmap/logo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/button"
-            android:layout_width="60dp"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:src="@drawable/baseline_arrow_back_24"
-            android:onClick="ingreso"/>
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewBackground">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:orientation="vertical"
             android:padding="20dp">
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:backgroundTint="@color/blue_color"
+                android:onClick="handleBackButtonClick"
+                android:padding="16dp"
+                android:src="@drawable/baseline_arrow_back_24"
+                app:layout_constraintBottom_toTopOf="@+id/textViewTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="Registrate"
+                android:textSize="38sp"
+                app:layout_constraintBottom_toTopOf="@+id/imageView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/backButton"
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="700px"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
                 app:srcCompat="@mipmap/logosinfondo" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/textViewSobreTi"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/cuentanosSobreTi"
                 android:textSize="20dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
             <TextView
-                android:layout_marginTop="20dp"
-                android:layout_width="match_parent"
+                android:id="@+id/textViewSoy"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/soy"
                 android:textSize="20dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewSobreTi" />
 
             <RadioGroup
                 android:id="@+id/rol"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewSoy">
 
                 <RadioButton
                     android:id="@+id/radioButton1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:checked="true"
-                    android:buttonTint="@color/blue_color"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:backgroundTint="@color/blue_color"
+                    android:buttonTint="@color/blue_color"
+                    android:checked="true"
                     android:text="@string/radioComerciante" />
 
                 <RadioButton
                     android:id="@+id/radioButton2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/radioConductor"
-                    android:buttonTint="@color/blue_color"/>
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:buttonTint="@color/blue_color"
+                    android:text="@string/radioConductor" />
 
                 <RadioButton
                     android:id="@+id/radioButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="@string/radioPropietario"
-                    android:buttonTint="@color/blue_color"/>
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:buttonTint="@color/blue_color"
+                    android:text="@string/radioPropietario" />
             </RadioGroup>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+                android:id="@+id/nombreLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="5dp"
                 app:boxStrokeColor="@color/blue"
-                android:padding="5dp">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rol">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/nombreRegistro"
@@ -102,11 +146,17 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Elementos restantes -->
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+                android:id="@+id/apellidosLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="5dp"
                 app:boxStrokeColor="@color/blue"
-                android:padding="5dp">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/nombreLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/apellidosRegistro"
@@ -117,10 +167,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+                android:id="@+id/documentoLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="5dp"
                 app:boxStrokeColor="@color/blue"
-                android:padding="5dp">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/apellidosLayout">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -144,10 +199,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+                android:id="@+id/correoLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="5dp"
                 app:boxStrokeColor="@color/blue"
-                android:padding="5dp">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/documentoLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/correoRegistro"
@@ -158,10 +218,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
+                android:id="@+id/contrasenaLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="5dp"
                 app:boxStrokeColor="@color/blue"
-                android:padding="5dp">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/correoLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/contrasenaRegistro"
@@ -169,19 +234,24 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/contra"
                     android:inputType="textPassword" />
-
             </com.google.android.material.textfield.TextInputLayout>
+
 
             <Button
                 android:id="@+id/crearCuenta"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/blue_color"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="24dp"
+                android:background="@color/blue_color"
                 android:onClick="crearRegistro"
-                android:text="@string/btn_registro" />
+                android:text="@string/btn_registro"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contrasenaLayout" />
 
-        </LinearLayout>
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

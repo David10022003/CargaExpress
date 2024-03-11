@@ -32,7 +32,10 @@ public class registroCamion extends AppCompatActivity {
         TextInputEditText placa = (TextInputEditText) findViewById(R.id.placa);
         TextInputEditText modelo = (TextInputEditText) findViewById(R.id.modelo);
         TextInputEditText capacidad = (TextInputEditText) findViewById(R.id.capacidad);
-
+        nTarjetaPropiedad.setError(null);
+        placa.setError(null);
+        modelo.setError(null);
+        capacidad.setError(null);
         if(nTarjetaPropiedad.getText().toString().isEmpty()){
             nTarjetaPropiedad.setError("Debe ingresar una tarjeta de propiedad valida");
             nTarjetaPropiedad.requestFocus();

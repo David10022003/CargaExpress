@@ -33,7 +33,7 @@ import java.util.List;
 
 public class MisCamiones extends AppCompatActivity {
 
-    private int cedula = 0;
+    private String cedula = "";
     private TableLayout tableLayout;
     private FirebaseFirestore database;
     @Override
@@ -41,7 +41,7 @@ public class MisCamiones extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mis_camiones);
         Intent intent = getIntent();
-        cedula = Integer.parseInt(intent.getStringExtra("documento"));
+        cedula = intent.getStringExtra("documento");
         database = FirebaseFirestore.getInstance();
         tableLayout = findViewById(R.id.table_layout);
         misCamiones(MisCamiones.this);
@@ -60,7 +60,7 @@ public class MisCamiones extends AppCompatActivity {
     }
 
     private void misCamiones(Context context) {
-        Query query = database.collection("camiones").whereEqualTo("propietario", cedula);
+        Query query = database.collection("camiones").whereEqualTo("propietario", Integer.parseInt(cedula));
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
