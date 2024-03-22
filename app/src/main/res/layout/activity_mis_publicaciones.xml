@@ -30,7 +30,7 @@
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:background="@null"
-            android:onClick="back"
+            android:onClick="backComerciante"
             android:src="@drawable/baseline_arrow_back_24" />
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 

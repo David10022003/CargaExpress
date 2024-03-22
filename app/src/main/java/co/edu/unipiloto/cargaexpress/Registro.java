@@ -1,18 +1,26 @@
 package co.edu.unipiloto.cargaexpress;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Text;
 
@@ -31,13 +39,11 @@ public class Registro extends AppCompatActivity {
     }
 
     public void ingreso(View view){
-        Intent intent = new Intent(this, Ingreso.class);
-        startActivity(intent);
+        finish();
     }
 
-    public void mainCarga(View view) {
-        Intent intent = new Intent(this, carga_express.class);
-        startActivity(intent);
+    public void mainCarga() {
+        finish();
     }
 
     public void crearRegistro(View view) {
@@ -80,10 +86,29 @@ public class Registro extends AppCompatActivity {
         }
         int id = rol.getCheckedRadioButtonId();
         String rolElegido = ((RadioButton)findViewById(id)).getText().toString();
-        createUsuarioDocument(cedula.getText().toString(), nombre.getText().toString(), apellidos.getText().toString(),
+        verificarUsuario(cedula.getText().toString(), nombre.getText().toString(), apellidos.getText().toString(),
                 tipoDocumento.getSelectedItem().toString(), email.getText().toString(), contra.getText().toString(), rolElegido);
-        mainCarga(view);
 
+    }
+
+    private void verificarUsuario(String cedula, String nombre, String apellidos, String tipoDocumento, String email, String contra, String rol){
+        Query query = database.collection("usuarios").whereEqualTo(FieldPath.documentId(), cedula);
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        Toast.makeText(Registro.this, "El usuario ya esta registrado: ", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        createUsuarioDocument(cedula, nombre, apellidos, tipoDocumento, email, contra, rol);
+                    }
+                } else {
+                    Log.d("MisCamiones", "Error getting documents: ", task.getException());
+                }
+            }
+        });
     }
 
     private void createUsuarioDocument(String cedula, String nombre, String apellidos, String tipoDocumento, String email, String contra, String rol) {
@@ -95,6 +120,7 @@ public class Registro extends AppCompatActivity {
         usuarioData.put("contra", contra);
         usuarioData.put("rol", rol);
         database.collection("usuarios").document(cedula).set(usuarioData);
+        mainCarga();
     }
 
 }

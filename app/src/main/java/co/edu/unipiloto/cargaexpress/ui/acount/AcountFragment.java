@@ -18,6 +18,7 @@ import co.edu.unipiloto.cargaexpress.databinding.FragmentAcountBinding;
 public class AcountFragment extends Fragment {
 
     private FragmentAcountBinding binding;
+    private Usuario user;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -26,7 +27,9 @@ public class AcountFragment extends Fragment {
 
         binding = FragmentAcountBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        datosUsuario(carga_express.user);
+        if(carga_express.user != null)
+            datosUsuario(carga_express.user);
+
         return root;
     }
 
@@ -34,6 +37,15 @@ public class AcountFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public Usuario getUser() {
+        return user;
+    }
+
+    public void setUser(Usuario user) {
+        this.user = user;
+        datosUsuario(this.user);
     }
 
     public  void datosUsuario(Usuario user){
@@ -44,4 +56,5 @@ public class AcountFragment extends Fragment {
         binding.textView11.setText(user.getEmail());
         binding.textView13.setText(user.getRol());
     }
+
 }

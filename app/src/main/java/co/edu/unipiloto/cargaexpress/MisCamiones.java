@@ -55,8 +55,7 @@ public class MisCamiones extends AppCompatActivity {
     }
 
     public void back(View view){
-        Intent intent = new Intent(this, carga_express.class);
-        startActivity(intent);
+        finish();
     }
 
     private void misCamiones(Context context) {
@@ -94,6 +93,14 @@ public class MisCamiones extends AppCompatActivity {
                                 row.addView(conductor);
                             }else {
                                 temp.setText("" + agregar.getConductor());
+                                temp.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(MisCamiones.this, MostrarConductor.class);
+                                        intent.putExtra("cedula", agregar.getConductor()+"");
+                                        startActivity(intent);
+                                    }
+                                });
                                 row.addView(temp);
                             }
                             tableLayout.addView(row);
@@ -117,7 +124,7 @@ public class MisCamiones extends AppCompatActivity {
                 .setPositiveButton("Buscar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         String userInput = inputEditText.getText().toString();
-                        buscarConductor(userInput);
+                        buscarConductor(userInput, placa);
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -125,61 +132,16 @@ public class MisCamiones extends AppCompatActivity {
                         // Aquí puedes manejar el evento de cancelación
                     }
                 });
-
-// Crear el diálogo
         AlertDialog dialog = builder.create();
-
-// Mostrar el diálogo
         dialog.show();
     }
 
-    public void buscarConductor(String cedulaBuscar) {
-        Query query = database.collection("usuarios").whereEqualTo(FieldPath.documentId(), cedulaBuscar).whereEqualTo("rol", "Conductor");
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            String datos = "";
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        String buscarConductor = querySnapshot.getDocuments().get(0).getString("nombre")+" "+
-                                querySnapshot.getDocuments().get(0).getString("apellidos") +
-                                "\n" + querySnapshot.getDocuments().get(0).getId();
-                        aceptarConductor(buscarConductor);
-
-                    } else {
-                        Toast.makeText(MisCamiones.this, "No se encuentra al conductor: " + cedulaBuscar, Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else {
-                    Log.d("MisCamiones", "Error getting documents: ", task.getException());
-                }
-            }
-
-        });
+    public void buscarConductor(String cedulaBuscar, String placa) {
+       Intent intent = new Intent(MisCamiones.this, MostrarConductor.class);
+       intent.putExtra("cedula", cedulaBuscar);
+       intent.putExtra("placa", placa);
+       startActivity(intent);
     }
 
-    private void aceptarConductor(String texto) {
-
-        // Crear y mostrar otro AlertDialog con texto y botones
-        AlertDialog.Builder innerBuilder = new AlertDialog.Builder(MisCamiones.this);
-        innerBuilder.setMessage("¿Desea agregar?: \n"+texto);
-        innerBuilder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                // Código que se ejecuta cuando se hace clic en el botón "Aceptar" del segundo diálogo
-            }
-        });
-        innerBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                // Código que se ejecuta cuando se hace clic en el botón "Cancelar" del segundo diálogo
-            }
-        });
-
-        // Crear y mostrar el segundo AlertDialog
-        AlertDialog innerDialog = innerBuilder.create();
-        innerDialog.show();
-    }
 
 }

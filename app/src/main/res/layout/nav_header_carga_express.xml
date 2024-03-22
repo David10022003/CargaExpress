@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
+    android:layout_height="wrap_content"
     android:background="@color/blue_color"
     android:gravity="bottom"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="20dp"
+    android:paddingTop="50dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="20dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@mipmap/icono_perfi"/>
+        android:src="@mipmap/icono_perfi"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/name"
@@ -34,4 +37,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/nav_header_subtitle" />
+
 </LinearLayout>

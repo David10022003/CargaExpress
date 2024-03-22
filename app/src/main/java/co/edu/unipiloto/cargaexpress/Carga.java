@@ -1,6 +1,11 @@
 package co.edu.unipiloto.cargaexpress;
 
-public class Carga {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class Carga implements Parcelable{
     private String codigo;
     private String tipoCarga;
     private long peso;
@@ -157,4 +162,58 @@ public class Carga {
         this.cedulaConductor = cedulaConductor;
     }
 
+    protected Carga(Parcel in){
+        this.codigo = in.readString();
+        this.tipoCarga = in.readString();
+        this.peso = in.readLong();
+        this.dimensiones = in.readString();
+        this.direccionOrigen = in.readString();
+        this.ciudadOrigen = in.readString();
+        this.direccionDestino = in.readString();
+        this.ciudadDestino = in.readString();
+        this.fechaPublicada = in.readString();
+        this.fechaRecogida = in.readString();
+        this.horaRecogida = in.readString();
+        this.fechaEntrega = in.readString();
+        this.especificaciones = in.readString();
+        this.cedulaComerciante = in.readLong();
+        this.cedulaConductor = in.readLong();
+
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(codigo);
+        dest.writeString(tipoCarga);
+        dest.writeLong(peso);
+        dest.writeString(dimensiones);
+        dest.writeString(direccionOrigen);
+        dest.writeString(ciudadOrigen);
+        dest.writeString(direccionDestino);
+        dest.writeString(ciudadDestino);
+        dest.writeString(fechaPublicada);
+        dest.writeString(fechaRecogida);
+        dest.writeString(horaRecogida);
+        dest.writeString(fechaEntrega);
+        dest.writeString(especificaciones);
+        dest.writeLong(cedulaComerciante);
+        dest.writeLong(cedulaConductor);
+        dest.writeLong(cedulaConductor);
+    }
+
+    public static final Parcelable.Creator<Carga> CREATOR = new Creator<Carga>() {
+        @Override
+        public Carga createFromParcel(Parcel in) {
+            return new Carga(in);
+        }
+
+        @Override
+        public Carga[] newArray(int size) {
+            return new Carga[size];
+        }
+    };
 }

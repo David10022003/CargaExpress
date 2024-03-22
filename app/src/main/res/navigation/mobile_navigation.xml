@@ -3,7 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_ingreso">
+
+    <fragment
+        android:id="@+id/nav_ingreso"
+        android:name="co.edu.unipiloto.cargaexpress.ui.login.IngresoFragment"
+        android:label="@string/btn_iniSesion"
+        tools:layout="@layout/fragment_ingreso"/>
 
     <fragment
         android:id="@+id/nav_home"

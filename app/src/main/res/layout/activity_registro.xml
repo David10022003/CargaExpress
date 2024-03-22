@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:backgroundTint="@color/blue_color"
-                android:onClick="handleBackButtonClick"
+                android:onClick="ingreso"
                 android:padding="16dp"
                 android:src="@drawable/baseline_arrow_back_24"
                 app:layout_constraintBottom_toTopOf="@+id/textViewTitle"

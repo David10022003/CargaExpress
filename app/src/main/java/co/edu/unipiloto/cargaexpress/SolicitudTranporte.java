@@ -267,8 +267,12 @@ public class SolicitudTranporte extends AppCompatActivity {
                                 if (task.isSuccessful()){
                                     QuerySnapshot querySnapshot = task.getResult();
                                     if (querySnapshot != null) {
-                                        int tam = querySnapshot.size();
-                                        database.collection("cargas").document(cedComerciante + "-" + (tam + 1)).set(cargaData);
+                                        String idCarga = cedComerciante + "-" + (querySnapshot.size() + 1);
+                                        database.collection("cargas").document(idCarga).set(cargaData);
+
+                                        String texto = ciudadOrigen.toUpperCase()+ "  ->   " +ciudadDestino.toUpperCase();
+                                        String bigText = texto +"\nRecoger:   "+ fechaRecogida +"   "+ horaRecogida;
+                                        MyFirebaseMessagingService.enviarNotificacionPorTopico("Nueva solicitud", texto, bigText, "idCarga", idCarga, "Propietario");
                                     }
                                 } else
                                     Log.d("SolicitudTransporte", "Error getting documents: ", task.getException());
@@ -283,8 +287,6 @@ public class SolicitudTranporte extends AppCompatActivity {
     }
 
     public void misPublicacionesView (View view) {
-        Intent intent = new Intent(this, MisPublicaciones.class);
-        intent.putExtra("documento", cedComerciante);
-        startActivity(intent);
+        finish();
     }
 }

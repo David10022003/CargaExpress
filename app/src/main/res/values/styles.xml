@@ -1,0 +1,10 @@
+<resources>
+    <style name="Widget.Theme.CargaExpress.ButtonBar.Fullscreen" parent="">
+        <item name="android:background">@color/black_overlay</item>
+        <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
+    </style>
+    <style name="container_round">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">30%</item>
+    </style>
+</resources>

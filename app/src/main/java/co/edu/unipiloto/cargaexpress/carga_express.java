@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -21,7 +23,13 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -29,6 +37,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.edu.unipiloto.cargaexpress.databinding.ActivityCargaExpressBinding;
+import co.edu.unipiloto.cargaexpress.ui.acount.AcountFragment;
+import co.edu.unipiloto.cargaexpress.ui.home.HomeFragment;
+import co.edu.unipiloto.cargaexpress.ui.login.IngresoFragment;
 
 
 public class carga_express extends AppCompatActivity {
@@ -43,10 +54,8 @@ public class carga_express extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityCargaExpressBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         setSupportActionBar(binding.appBarCargaExpress.toolbar);
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
@@ -62,7 +71,7 @@ public class carga_express extends AppCompatActivity {
         preferences = this.getPreferences(Context.MODE_PRIVATE);
         editor = preferences.edit();
         database = FirebaseFirestore.getInstance();
-        iniciarSesion();
+        FirebaseApp.initializeApp(this);
     }
 
     @Override
@@ -78,25 +87,14 @@ public class carga_express extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-
-    private void iniciarSesion(){
-        Intent intent;
-        if(getIntent().hasExtra("user")) {
-            user = getIntent().getParcelableExtra("user");
-            guardarSesion(user.getCedula(), user.getContra());
-            iniComponents();
-            return;
-        }
-        if(this.preferences.getString("user", "").equals("") && this.preferences.getString("password", "").equals("")) {
-            intent = new Intent(this, Ingreso.class);
-            startActivity(intent);
-        }
-        else{
-            acceso(this.preferences.getString("user", ""), this.preferences.getString("password", ""));
-
-        }
+    boolean userLoaded;
+    public void iniciarSesion(Usuario user){
+        this.user = user;
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_carga_express);
+        iniComponents();
+        MyFirebaseMessagingService.guardarToken(this.user.getRol());
     }
-    
+
     public void verElementos(View view) {
         if(user.getRol().equals("Comerciante")){
             Intent intent = new Intent(this, MisPublicaciones.class);
@@ -110,33 +108,26 @@ public class carga_express extends AppCompatActivity {
         }
     }
 
-    private void acceso(String cedula, String password) {
-        Query query = database.collection("usuarios").whereEqualTo(FieldPath.documentId(), cedula).whereEqualTo("contra", password);
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        DocumentSnapshot document = querySnapshot.getDocuments().get(0);
-                        user = new Usuario(document.getId(), document.getString("nombre"), document.getString("apellidos"),
-                                document.getString("tipoDocumento"), document.getString("email"), document.getString("contra"), document.getString("rol"));
-                        iniComponents();
+    public void salir(View view){
+        MyFirebaseMessagingService.eliminarToken(user.getRol());
+        user = null;
+        editor.remove("user");
+        editor.remove("password");
+        editor.apply();
+        DrawerLayout drawer = binding.drawerLayout;
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
 
-                    }
-                    else{
-                            Intent intent = new Intent(carga_express.this, Ingreso.class);
-                            startActivity(intent);
-                    }
+        // Obtener el NavController y popBackStack para eliminar el fragmento Home
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_carga_express);
+        navController.popBackStack();
 
-                }
-                else{
-                    Intent intent = new Intent(carga_express.this, Ingreso.class);
-                    startActivity(intent);
-                }
-            }
-        });
+        // Navegar al fragmento de ingreso
+        navController.navigate(R.id.nav_ingreso);
     }
+
+
 
     private void botonRoles(NavigationView navigation) {
         Button opcional = (Button) navigation.findViewById(R.id.ver);
@@ -157,12 +148,6 @@ public class carga_express extends AppCompatActivity {
         ((TextView)headerView.findViewById(R.id.rol)).setText(user.getRol());
         Menu menu = navigationView.getMenu();
         botonRoles(navigation);
-    }
 
-    private void guardarSesion(String cedula, String password) {
-        editor.putString("user", cedula);
-        editor.putString("password", password);
-        editor.apply();
     }
-
 }

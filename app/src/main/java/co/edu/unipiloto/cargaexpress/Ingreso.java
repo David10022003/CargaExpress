@@ -59,6 +59,7 @@ public class Ingreso extends AppCompatActivity {
         Intent intent = new Intent(this, carga_express.class);
         intent.putExtra("user", user);
         startActivity(intent);
+        finish();
     }
 
     public void ingreso(View view) {

@@ -22,12 +22,33 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_carga_express"
         app:menu="@menu/activity_main_drawer">
-        <Button
-            android:id="@+id/ver"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_gravity="bottom|center"
-            android:onClick="verElementos" />
+            android:layout_gravity="bottom|center">
+
+            <Button
+                android:id="@+id/ver"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:onClick="verElementos"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/salir"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/salir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:padding="5dp"
+                android:onClick="salir"
+                android:src="@drawable/baseline_logout_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

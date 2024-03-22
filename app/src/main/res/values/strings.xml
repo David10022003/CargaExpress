@@ -70,4 +70,30 @@
     <string name="btn_publicarSolicitud">Publicar solicitud</string>
     <string name="mis_publicaciones">Mis Cargas</string>
     <string name="agregar_carga">Agregar carga</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="agregar_conductor">¿Desea agregar este conductor?</string>
+    <string name="boton_aceptar">Aceptar</string>
+    <string name="boton_cancelar">Cancelar</string>
+    <string name="correo">Correo</string>
+    <string name="conductor">Conductor asignado</string>
+    <string name="ciudad_origen">Origen</string>
+    <string name="ciudad_destino">Destino</string>
+    <string name="aplicar">¿Desea aplicar a esta carga?</string>
+    <string name="btn_postularme">Postularme a carga</string>
+    <string name="ver_postulaciones">Ver postulaciones</string>
+    <string name="origen">Origen</string>
+    <string name="destino">Destino</string>
+    <string name="fechaHoraRecogida">Fecha y hora de recogida</string>
 </resources>

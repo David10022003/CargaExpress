@@ -35,6 +35,10 @@ public class MisPublicaciones extends AppCompatActivity {
         mostrarPublicaciones();
     }
 
+    public void backComerciante(View view) {
+        finish();
+    }
+
     public void solicitarTransporteView (View view){
         Intent intent = new Intent(this, SolicitudTranporte.class);
         intent.putExtra("documento", cedula);

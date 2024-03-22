@@ -73,8 +73,6 @@ public class registroCamion extends AppCompatActivity {
     }
 
     public void camionView (View view){
-        Intent intent = new Intent(this, MisCamiones.class);
-        intent.putExtra("documento", cedulaPropietario);
-        startActivity(intent);
+        finish();
     }
 }
