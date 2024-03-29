@@ -20,30 +20,54 @@ import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         Log.d("Nuevo Token", token);
+        guardarTokenIndividual(carga_express.user.getCedula());
     }
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
-        String title = message.getData().get("title");
-        String content = message.getData().get("body").split("##")[0];
-        String bigText = message.getData().get("body").split("##")[1];
-        String idCarga = message.getData().get("idCarga");
-        buscarCargaNotificacion(this, title, content, bigText, idCarga);
+        if (message.getNotification()!=null){
+            Log.d("RecibiendoMessage", "Title de la noti: " +message.getNotification().getTitle());
+            Log.d("RecibiendoMessage", "Body de la noti: " +message.getNotification().getBody());
+        }
+        if (message.getData().size() > 0) {
+            Log.d("RecibiendoMessage", "Title en data: " + message.getData().get("title"));
+            Log.d("RecibiendoMessage", "Body en data: " + message.getData().get("body"));
+            Log.d("RecibiendoMessage", "BigText en data: " + message.getData().get("bigText"));
+            Log.d("RecibiendoMessage", "Type en data: " + message.getData().get("type"));
+            Log.d("RecibiendoMessage", "idCarga en data: " + message.getData().get("idCarga"));
+        }
+        String title = message.getNotification().getTitle();
+        String content = message.getNotification().getBody();
+        String bigText = content;
+
+        if (message.getData().size() > 0) {
+            bigText = message.getData().get("bigText");
+            String type = message.getData().get("type");
+            if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado")) {
+                String idCarga = message.getData().get("idCarga");
+                String titleData = message.getData().get("titleData");
+                buscarCargaNotificacion(this, titleData , bigText, bigText, type, idCarga);
+            }
+        } else
+            crearSimpleNotification(this, title, content, bigText, "", null);
+
     }
 
-    public void crearSimpleNotification(Context context, String titulo, String texto, String bigText, Carga carga) {
+    public void crearSimpleNotification(Context context, String titulo, String texto, String bigText, String type, Object object) {
         String channelId = "idChannel";
         int id = 1;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -57,22 +81,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
         }
-
-        Intent intent = new Intent(context, carga_express.class);
-        //Intent intent = new Intent(context, AplicarCarga.class);
-        intent.putExtra("carga", carga);
+        Intent intent = new Intent();
+        if (type.equalsIgnoreCase("nuevaCarga")) {
+            Carga carga = (Carga) object;
+            intent = new Intent(context, AplicarCarga.class);
+            Usuario user = carga_express.user;
+            intent.putExtra("user", user);
+            intent.putExtra("carga", carga);
+        }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.baseline_work_24)
                 .setContentTitle(titulo)
                 .setContentText(texto)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(bigText))
+                .setSmallIcon(R.mipmap.logosinfondo)
                 .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
 
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -87,7 +116,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManagerCompat.from(context).notify(id, builder.build());
     }
 
-    private void buscarCargaNotificacion (Context context, String titulo, String texto, String bigText, String idCarga) {
+    private void buscarCargaNotificacion (Context context, String titulo, String texto, String bigText, String type, String idCarga) {
 
         Query query = FirebaseFirestore.getInstance().collection("cargas").whereEqualTo(FieldPath.documentId(), idCarga);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -97,8 +126,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     QuerySnapshot querySnapshot = task.getResult();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         DocumentSnapshot document = querySnapshot.getDocuments().get(0);
-                        Carga carga = new Carga(document.getId(), document.getString("tipoCarga"), document.getLong("peso"), document.getString("dimensiones"), document.getString("direccionOrigen"), document.getString("ciudadOrigen"), document.getString("direccionDestino"), document.getString("ciudadDestino"), document.getString("fechaPublicacion"), document.getString("fechaRecogida"), document.getString("horaRecogida"), document.getString("fechaEntrega"), document.getString("especificaciones"), document.getLong("comerciante"), document.getLong("conductor"));
-                        crearSimpleNotification(context, titulo, texto, bigText, carga);
+                        Carga carga = new Carga(document.getId(), document.getString("tipoCarga"), document.getLong("peso"), document.getString("dimensiones"), document.getString("direccionOrigen"), document.getString("ciudadOrigen"),
+                                document.getString("direccionDestino"), document.getString("ciudadDestino"), document.getString("fechaPublicacion"), document.getString("fechaRecogida"), document.getString("horaRecogida"),
+                                document.getString("fechaEntrega"), document.getString("especificaciones"), document.getLong("comerciante"), document.getLong("conductor"), document.getString("estado"));
+                        Log.d("buscarCargaNotificacion", "id: " +carga.getCodigo()+ " tipo: " +carga.getTipoCarga()+ " peso: " +carga.getPeso()+ " dimensiones: " +carga.getDimensiones()+ " direccionOrigen: " +carga.getDireccionOrigen()+ " ciudadOrigen: " +carga.getCiudadOrigen()+ " direccionDestino: " +carga.getDireccionDestino()+ " ciudadDestino: " +carga.getCiudadDestino()+ " fechaPublicada: " +carga.getFechaPublicada()+ " fechaRecogida: " +carga.getFechaRecogida()+ " horaRecogida: " +carga.getHoraRecogida()+ " fechaEntrega: " +carga.getFechaEntrega()+ " especif: " + carga.getEspecificaciones()+ " cedComerciante: " + carga.getCedulaComerciante()+ " cedConductor: " + carga.getCedulaConductor());
+                        crearSimpleNotification(context, titulo, texto, bigText, type, carga);
                     }
                 }
                 else{
@@ -124,6 +156,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     public static void eliminarToken (String rol) {
+        //Eliminar del rol
         String topic = rol.split(" ")[0];
         FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -136,22 +169,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                     }
                 });
+
+        //Eliminar el token individual de la DB
+        FirebaseFirestore.getInstance().document("tokens/"+carga_express.user.getCedula()).delete()
+                .addOnSuccessListener(aVoid -> Log.d("eliminarToken", "Documento eliminado con éxito"))
+                .addOnFailureListener(e -> Log.w("eliminarToken", "Error al eliminar el documento", e));
     }
 
-    public static void enviarNotificacionPorTopico(String title, String content, String bigText, String clave, String valor, String topic) {
-        RemoteMessage message = new RemoteMessage.Builder(topic + "@fcm.googleapis.com")
-                .setMessageId(UUID.randomUUID().toString())
-                .addData("title", title)
-                .addData("body", content +"##"+ bigText)
-                .addData(clave, valor)
-                .build();
-
-        try {
-            FirebaseMessaging.getInstance().send(message);
-            Log.d("enviarNotificacionTopic", "Notificación enviada correctamente al tema: " +topic);
-            Log.d("prueba", clave+ ": " +valor);
-        } catch (Exception e) {
-            Log.e("enviarNotificacionTopic","Error al enviar la notificación al tema: " + topic, e);
-        }
+    public static void guardarTokenIndividual (String idUser) {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        String token = task.getResult().getToken();
+                        Log.d("guardarTokenIndividual", "Token FCM: " + token);
+                        Map<String, Object> tokenData = new HashMap<>();
+                        tokenData.put("token", token);
+                        FirebaseFirestore.getInstance().collection("tokens").document(idUser).set(tokenData);
+                    } else {
+                        Log.w("guardarTokenIndividual", "Error al obtener el token FCM", task.getException());
+                    }
+                });
     }
 }

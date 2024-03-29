@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +16,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CargaExpress"
         tools:targetApi="31">
+        <activity
+            android:name=".AsignarConductor"
+            android:exported="false" />
+        <activity
+            android:name=".ver_incidente"
+            android:exported="false" />
+        <activity
+            android:name=".Incidente"
+            android:exported="false" />
         <activity
             android:name=".AplicarCarga"
             android:exported="false" />
@@ -49,6 +60,7 @@
         <activity
             android:name=".Ingreso"
             android:exported="false" />
+
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">

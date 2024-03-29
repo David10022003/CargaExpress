@@ -55,7 +55,7 @@ public class MisPublicaciones extends AppCompatActivity {
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         for(QueryDocumentSnapshot document : querySnapshot) {
                             Carga agregar = new Carga(String.valueOf(document.getId()), document.getString("tipoCarga"),
-                                    document.getLong("peso"), document.getString("dimensiones"), document.getString("direccionOrigen"), document.getString("ciudadOrigen"), document.getString("direccionDestino"), document.getString("ciudadDestino"), document.getString("fechaPublicacion"), document.getString("fechaRecogida"), document.getString("horaRecogida"),document.getString("fechaEntrega"), document.getString("especificaciones"), document.getLong("comerciante"), document.getLong("conductor"));
+                                    document.getLong("peso"), document.getString("dimensiones"), document.getString("direccionOrigen"), document.getString("ciudadOrigen"), document.getString("direccionDestino"), document.getString("ciudadDestino"), document.getString("fechaPublicacion"), document.getString("fechaRecogida"), document.getString("horaRecogida"),document.getString("fechaEntrega"), document.getString("especificaciones"), document.getLong("comerciante"), document.getLong("conductor"), document.getString("estado"));
                             TableRow row = new TableRow(MisPublicaciones.this);
                             row.setPadding(10,5,10,5);
                             TextView temp = new TextView(MisPublicaciones.this);
@@ -75,6 +75,7 @@ public class MisPublicaciones extends AppCompatActivity {
                                 });
                                 row.addView(conductor);
                             }else {
+                                temp = new TextView(MisPublicaciones.this);
                                 temp.setText("" + agregar.getCedulaConductor());
                                 row.addView(temp);
                             }

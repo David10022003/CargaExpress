@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +28,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -35,6 +44,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.List;
 
 import co.edu.unipiloto.cargaexpress.databinding.ActivityCargaExpressBinding;
 import co.edu.unipiloto.cargaexpress.ui.acount.AcountFragment;
@@ -51,20 +62,24 @@ public class carga_express extends AppCompatActivity {
     private FirebaseFirestore database;
     public static Usuario user;
 
+    private Toolbar toolbar;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCargaExpressBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.appBarCargaExpress.toolbar);
+        toolbar = binding.appBarCargaExpress.toolbar;
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_acount)
-                .setOpenableLayout(drawer)
-                .build();
+              R.id.nav_home)
+            .setOpenableLayout(drawer)
+              .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_carga_express);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
@@ -72,6 +87,7 @@ public class carga_express extends AppCompatActivity {
         editor = preferences.edit();
         database = FirebaseFirestore.getInstance();
         FirebaseApp.initializeApp(this);
+
     }
 
     @Override
@@ -92,7 +108,9 @@ public class carga_express extends AppCompatActivity {
         this.user = user;
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_carga_express);
         iniComponents();
+        MyFirebaseMessagingService.guardarTokenIndividual(this.user.getCedula());
         MyFirebaseMessagingService.guardarToken(this.user.getRol());
+        MyFirebaseMessagingService.guardarToken("Todos");
     }
 
     public void verElementos(View view) {
@@ -110,6 +128,7 @@ public class carga_express extends AppCompatActivity {
 
     public void salir(View view){
         MyFirebaseMessagingService.eliminarToken(user.getRol());
+        MyFirebaseMessagingService.eliminarToken("Todos");
         user = null;
         editor.remove("user");
         editor.remove("password");
@@ -119,11 +138,8 @@ public class carga_express extends AppCompatActivity {
             drawer.closeDrawer(GravityCompat.START);
         }
 
-        // Obtener el NavController y popBackStack para eliminar el fragmento Home
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_carga_express);
         navController.popBackStack();
-
-        // Navegar al fragmento de ingreso
         navController.navigate(R.id.nav_ingreso);
     }
 
@@ -150,4 +166,5 @@ public class carga_express extends AppCompatActivity {
         botonRoles(navigation);
 
     }
+
 }

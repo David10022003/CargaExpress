@@ -252,6 +252,7 @@ public class SolicitudTranporte extends AppCompatActivity {
         cargaData.put("especificaciones", especificaciones);
         cargaData.put("comerciante", cedulaComerciante);
         cargaData.put("conductor", cedulaConductor);
+        cargaData.put("estado", "publicado");
 
         CollectionReference cargasRef = database.collection("cargas");
         cargasRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -270,9 +271,6 @@ public class SolicitudTranporte extends AppCompatActivity {
                                         String idCarga = cedComerciante + "-" + (querySnapshot.size() + 1);
                                         database.collection("cargas").document(idCarga).set(cargaData);
 
-                                        String texto = ciudadOrigen.toUpperCase()+ "  ->   " +ciudadDestino.toUpperCase();
-                                        String bigText = texto +"\nRecoger:   "+ fechaRecogida +"   "+ horaRecogida;
-                                        MyFirebaseMessagingService.enviarNotificacionPorTopico("Nueva solicitud", texto, bigText, "idCarga", idCarga, "Propietario");
                                     }
                                 } else
                                     Log.d("SolicitudTransporte", "Error getting documents: ", task.getException());

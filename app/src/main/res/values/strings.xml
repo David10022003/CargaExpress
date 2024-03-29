@@ -96,4 +96,28 @@
     <string name="origen">Origen</string>
     <string name="destino">Destino</string>
     <string name="fechaHoraRecogida">Fecha y hora de recogida</string>
+    <string name="busqueda">Introduza una palabra clave</string>
+    <string name="detalle_carga">Detalle Carga</string>
+    <string name="iniciar_viaje">Iniciar Viaje</string>
+    <string name="iniciar_viaje_confirmacion">¿Está seguro de iniciar este viaje?</string>
+    <string name="finalizar_viaje">Finalizar viaje</string>
+    <string name="ver_incidencia">Ver incidencia</string>
+    <string name="titulo_incidencia">Titulo Incidencia</string>
+    <string name="descripcion_incidencia">Ingrese la descripcion de la incidencia</string>
+    <string name="continuar_viaje">Continuar viaje</string>
+    <string name="fotos_incidencia">Adjunte evidencia y fotos de la carga</string>
+    <string name="publicar_incidencia">Publicar Incidencia</string>
+    <string name="asignar_conductor">Asignar Conductor</string>
+    <string name="confirmacion_asignacion_conductor">¿Está seguro de asignar?</string>
+    <string-array name="tipos_incidencia">
+        <item>Asalto en ruta</item>
+        <item>Colision</item>
+        <item>Condiciones de ruta complicadas</item>
+        <item>Incendio</item>
+        <item>Averias en el vehiculo</item>
+        <item>Via cerrada</item>
+        <item>Robo de carga</item>
+        <item>Atasco en la via</item>
+        <item>Otro</item>
+    </string-array>
 </resources>

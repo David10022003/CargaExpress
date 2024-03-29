@@ -2,12 +2,22 @@ package co.edu.unipiloto.cargaexpress.ui.home;
 
 
 import android.content.Intent;
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
+import android.os.CancellationSignal;
+import android.os.ParcelFileDescriptor;
+import android.print.PageRange;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintDocumentInfo;
+import android.print.pdf.PrintedPdfDocument;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +25,9 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,6 +53,8 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private static Usuario user;
     private FirebaseFirestore database;
+
+    private static List<Carga> cargas;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -68,10 +83,14 @@ public class HomeFragment extends Fragment {
         else if(user.getRol().equals("Propietario de camion")) {
             traerDB("cargas", "", "");
         }
+        else if(user.getRol().equals("Conductor")) {
+            traerDB("cargas", "conductor", user.getCedula());
+        }
     }
 
     private void traerDB(String tabla, String columna, String fila) {
         Query query;
+        cargas = new ArrayList();
         if(!fila.equals(""))
             query = database.collection(tabla).whereEqualTo(columna, Integer.parseInt(fila));
         else
@@ -94,54 +113,39 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void crearLista(QuerySnapshot querySnapshot){
-        List<DocumentSnapshot> documentList = querySnapshot.getDocuments();
-        ConstraintLayout constraintLayout = binding.layout;
+    private void crearLista(QuerySnapshot querySnapshot) {
+        RecyclerView recyclerView = binding.recyclerView;
+        GridLayoutManager layoutManager = new GridLayoutManager(requireContext(),1 );
+        recyclerView.setLayoutManager(layoutManager);
+        llenarLista(querySnapshot);
+        AdapterRecyclerView adapterRecyclerView = new AdapterRecyclerView(requireContext(), cargas);
+        recyclerView.setAdapter(adapterRecyclerView);
 
-        int lastAddedViewId = ConstraintLayout.NO_ID;
+        if(cargas.isEmpty())
+            Toast.makeText(requireContext(), "Error al mostrar cargas", Toast.LENGTH_LONG).show();
+        else{
+            adapterRecyclerView.setSearchList(cargas);
+        }
 
-        // Iterar sobre los documentos y crear un card para cada uno
-        for (int i = 0; i < documentList.size(); i++) {
-            DocumentSnapshot document = documentList.get(i);
-            View cardView = LayoutInflater.from(requireContext()).inflate(R.layout.card, constraintLayout, false);
-            cardView.setId(View.generateViewId());
+    }
 
-
-            TextView tipoCargaTextView = cardView.findViewById(R.id.textView26);
-            TextView pesoTextView = cardView.findViewById(R.id.textView28);
-            TextView ciudadOrigenTextView = cardView.findViewById(R.id.textView32);
-            TextView ciudadDestinoTextView = cardView.findViewById(R.id.textView31);
-            TextView fechaRecogidaTextView = cardView.findViewById(R.id.textView34);
-
-            tipoCargaTextView.setText(document.getString("tipoCarga"));
-            pesoTextView.setText(String.valueOf(document.getLong("peso")));
-            ciudadOrigenTextView.setText(document.getString("ciudadOrigen"));
-            ciudadDestinoTextView.setText(document.getString("ciudadDestino"));
-            fechaRecogidaTextView.setText(document.getString("fechaRecogida"));
-
-            // Configurar las restricciones del card
-            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) cardView.getLayoutParams();
-            layoutParams.topToBottom = lastAddedViewId != ConstraintLayout.NO_ID ? lastAddedViewId : ConstraintLayout.LayoutParams.MATCH_PARENT;
-
-            // Agregar el card al ConstraintLayout
-            constraintLayout.addView(cardView, layoutParams);
-
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Carga carga = new Carga(document.getId(), document.getString("tipoCarga"), document.getLong("peso"), document.getString("dimensiones"), document.getString("direccionOrigen"),
-                            document.getString("ciudadOrigen"), document.getString("direccionDestino"), document.getString("ciudadDestino"), document.getString("fechaPublicacion"), document.getString("fechaRecogida"),
-                            document.getString("horaRecogida"), document.getString("fechaEntrega"), document.getString("especificaciones"), document.getLong("comerciante"), document.getLong("conductor"));
-                    Intent intent = new Intent(requireContext(), AplicarCarga.class);
-                    intent.putExtra("user", user);
-                    intent.putExtra("carga", carga);
-                    startActivity(intent);
-
-                }
-            });
-
-            lastAddedViewId = cardView.getId();
+    private void llenarLista(QuerySnapshot query) {
+        Carga temp;
+        for(DocumentSnapshot result : query.getDocuments()) {
+            temp = new Carga(result.getId(), result.getString("tipoCarga"),  result.getLong("peso"), result.getString("dimensiones"), result.getString("direccionOrigen"), result.getString("ciudadOrigen"), result.getString("direccionDestino"), result.getString("ciudadDestino"), result.getString("fechaPublicacion"), result.getString("fechaRecogida"), result.getString("horaRecogida"), result.getString("fechaEntrega"), result.getString("especificaciones"), result.getLong("comerciante"), result.getLong("conductor"), result.getString("estado"));
+            cargas.add(temp);
         }
     }
 
+
+    public static List<Carga> getCargas() {
+        return cargas;
+    }
+
+    public static void setCargas(Carga carga) {
+        for (Carga temp: cargas) {
+            if(temp.getCodigo().equals(carga.getCodigo()))
+                cargas.set(cargas.indexOf(temp), carga);
+        }
+    }
 }

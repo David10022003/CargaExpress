@@ -22,9 +22,11 @@ public class Carga implements Parcelable{
     private long cedulaComerciante;
     private long cedulaConductor;
 
+    private String estado;
+
     public Carga() {}
 
-    public Carga(String codigo, String tipoCarga, long peso, String dimensiones, String direccionOrigen, String ciudadOrigen, String direccionDestino, String ciudadDestino, String fechaPublicada, String fechaRecogida, String horaRecogida, String fechaEntrega, String especificaciones, long cedulaComerciante, long cedulaConductor) {
+    public Carga(String codigo, String tipoCarga, long peso, String dimensiones, String direccionOrigen, String ciudadOrigen, String direccionDestino, String ciudadDestino, String fechaPublicada, String fechaRecogida, String horaRecogida, String fechaEntrega, String especificaciones, long cedulaComerciante, long cedulaConductor, String estado) {
         this.codigo = codigo;
         this.tipoCarga = tipoCarga;
         this.peso = peso;
@@ -40,6 +42,7 @@ public class Carga implements Parcelable{
         this.especificaciones = especificaciones;
         this.cedulaComerciante = cedulaComerciante;
         this.cedulaConductor = cedulaConductor;
+        this.estado = estado;
     }
 
     public String getCodigo() {
@@ -154,6 +157,18 @@ public class Carga implements Parcelable{
         this.cedulaComerciante = cedulaComerciante;
     }
 
+    public void setPeso(long peso) {
+        this.peso = peso;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
     public long getCedulaConductor() {
         return cedulaConductor;
     }
@@ -178,6 +193,7 @@ public class Carga implements Parcelable{
         this.especificaciones = in.readString();
         this.cedulaComerciante = in.readLong();
         this.cedulaConductor = in.readLong();
+        this.estado = in.readString();
 
     }
     @Override
@@ -202,7 +218,7 @@ public class Carga implements Parcelable{
         dest.writeString(especificaciones);
         dest.writeLong(cedulaComerciante);
         dest.writeLong(cedulaConductor);
-        dest.writeLong(cedulaConductor);
+        dest.writeString(estado);
     }
 
     public static final Parcelable.Creator<Carga> CREATOR = new Creator<Carga>() {
