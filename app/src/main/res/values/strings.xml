@@ -120,4 +120,8 @@
         <item>Atasco en la via</item>
         <item>Otro</item>
     </string-array>
+    <string name="idChannel">channelId</string>
+    <string name="ir_a_configuracion">IR A CONFIGURACIÓN</string>
+    <string name="continuar">CONTINUAR</string>
+    <string name="descripcion_permiso">Si desea recibir notificaciones, habilite este permiso en la configuración de la aplicación. \\n\\nAl continuar acepta que no recibirás ninguna notificación ni estará informado de lo que suceda dentro de la aplicación</string>
 </resources>

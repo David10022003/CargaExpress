@@ -78,7 +78,6 @@ public class AsignarConductor extends AppCompatActivity {
                             placas.add(placa);
                         }
                         if(placas.isEmpty()) {
-                            Toast.makeText(this, "Aún no hay postulaciones realizadas", Toast.LENGTH_LONG).show();
                             return;
                         }
                         database.collection("camiones")

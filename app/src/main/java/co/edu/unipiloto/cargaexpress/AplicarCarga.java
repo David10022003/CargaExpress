@@ -61,6 +61,7 @@ public class AplicarCarga extends AppCompatActivity {
         user = getIntent().getParcelableExtra("user");
         carga = getIntent().getParcelableExtra("carga");
         if(carga.getEstado().equals("publicado")) {
+            Toast.makeText(AplicarCarga.this, "User "+ user.getCedula()+user.getRol(), Toast.LENGTH_SHORT).show();
             switch (user.getRol()) {
                 case "Propietario de camion":
                     ((Button) findViewById(R.id.btn_publicarSolicitud_transporte)).setText(R.string.btn_postularme);

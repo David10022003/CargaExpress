@@ -3,9 +3,14 @@ package co.edu.unipiloto.cargaexpress;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.ViewGroup;
@@ -19,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
@@ -29,9 +35,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
@@ -61,8 +69,8 @@ public class carga_express extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private FirebaseFirestore database;
     public static Usuario user;
-
     private Toolbar toolbar;
+    private static final int REQUEST_CODE = 100;
 
 
     @Override
@@ -87,6 +95,7 @@ public class carga_express extends AppCompatActivity {
         editor = preferences.edit();
         database = FirebaseFirestore.getInstance();
         FirebaseApp.initializeApp(this);
+        solicitarPermisoNotificaciones();
 
     }
 
@@ -167,4 +176,79 @@ public class carga_express extends AppCompatActivity {
 
     }
 
+    private void solicitarPermisoNotificaciones () {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13 o superior, usar POST_NOTIFICATIONS
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, REQUEST_CODE);
+            }
+        }
+        else {
+            // Android 12 o inferior, usar permiso alternativo
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED)
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_NOTIFICATION_POLICY}, REQUEST_CODE);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            boolean permisoSolicitado = preferences.getBoolean("permisoNotificacionMostrado", false);
+            if (grantResults.length == 0 || (grantResults[0] == PackageManager.PERMISSION_DENIED && !permisoSolicitado)) {
+                showPermissionDeniedDialog();
+            }
+        }
+    }
+
+    private void showPermissionDeniedDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View alert = inflater.inflate(R.layout.alert_dialog, null);
+        builder.setView(alert);
+        builder.setCancelable(false);
+        AlertDialog dialog = builder.create();
+
+        Button continuar = alert.findViewById(R.id.button4);
+        continuar.setText(getResources().getString(R.string.continuar));
+        continuar.setBackgroundColor(getResources().getColor(R.color.light_gray));
+        continuar.setTextColor(getResources().getColor(R.color.blue_color));
+        continuar.setTextSize(14);
+
+        Button configuracion = alert.findViewById(R.id.button5);
+        configuracion.setText(getResources().getString(R.string.ir_a_configuracion));
+        configuracion.setTextSize(14);
+
+        TextView titulo = alert.findViewById(R.id.textView35);
+        titulo.setText("Carga Express no podrá enviarte notificaciones");
+        titulo.setTextSize(18);
+
+        TextView descripcion = new TextView(this);
+        TextInputEditText editText = alert.findViewById(R.id.aplicar_camion);
+        ViewGroup.LayoutParams layoutParams = editText.getLayoutParams();
+        ViewGroup parentView = (ViewGroup) editText.getParent();
+        int index = parentView.indexOfChild(editText);
+        parentView.removeView(editText);
+        parentView.addView(descripcion, index, layoutParams);
+        descripcion.setText(getResources().getString(R.string.descripcion_permiso));
+        descripcion.setTextSize(14);
+
+        configuracion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        });
+        continuar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                editor.putBoolean("permisoNotificacionMostrado", true);
+                editor.apply();
+            }
+        });
+        dialog.show();
+    }
 }

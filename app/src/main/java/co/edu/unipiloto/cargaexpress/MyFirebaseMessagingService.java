@@ -33,7 +33,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         Log.d("Nuevo Token", token);
-        guardarTokenIndividual(carga_express.user.getCedula());
+        if (carga_express.user != null)
+            guardarTokenIndividual(carga_express.user.getCedula());
     }
 
     @Override
@@ -82,16 +83,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
         Intent intent = new Intent();
-        if (type.equalsIgnoreCase("nuevaCarga")) {
+        if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado")) {
             Carga carga = (Carga) object;
             intent = new Intent(context, AplicarCarga.class);
             Usuario user = carga_express.user;
             intent.putExtra("user", user);
             intent.putExtra("carga", carga);
         }
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
                 .setContentTitle(titulo)

@@ -6,6 +6,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
@@ -21,6 +23,8 @@ import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -93,11 +97,11 @@ public class Incidente extends AppCompatActivity {
             temp.setImageURI(imageUri);
             if (imageView.size() < 3) {
                 imageView.add(temp);
-                img.add(convertirImagenABase64(imageUri));
+                img.add(comprimirImagen(imageUri));
             } else {
                 constraint.removeView(findViewById(imageView.get(imageView.size() -1).getId()));
                 imageView.set(imageView.size() - 1, temp);
-                img.set(img.size() -1 ,convertirImagenABase64(imageUri));
+                img.set(img.size() -1 ,comprimirImagen(imageUri));
 
             }
             constraint.addView(temp);
@@ -127,11 +131,10 @@ public class Incidente extends AppCompatActivity {
         usuarioData.put("descripcion", descripcion.getText().toString());
         usuarioData.put("tipos", spinner.getSelectedItem().toString());
         usuarioData.put("imagenes", img);
-        carga.setEstado("Incidencia");
         database.collection("incidencias").document().set(usuarioData);
+        carga.setEstado("Incidencia");
         HomeFragment.setCargas(carga);
         usuarioData = new HashMap<>();
-        //usuarioData.put("descripcion", text.getText().toString());
         usuarioData.put("estado", "Incidencia");
         database.collection("cargas").document(carga.getCodigo()).update(usuarioData);
         carga.setEstado("Incidencia");
@@ -144,16 +147,17 @@ public class Incidente extends AppCompatActivity {
 
     }
 
-    private String convertirImagenABase64(Uri imageUri) {
+    private String comprimirImagen(Uri imageUri) {
         try {
-            InputStream inputStream = getContentResolver().openInputStream(imageUri);
-            byte[] bytes = new byte[inputStream.available()];
-            inputStream.read(bytes);
-            inputStream.close();
-            return Base64.encodeToString(bytes, Base64.DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, outputStream);
+            byte[] byteArray = outputStream.toByteArray();
+            return Base64.encodeToString(byteArray, Base64.DEFAULT);
+        } catch (FileNotFoundException ex) {
+            throw new RuntimeException(ex);
         }
+
     }
+
 }

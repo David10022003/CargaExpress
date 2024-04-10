@@ -63,7 +63,7 @@ public class ver_incidente extends AppCompatActivity {
                     forward.setEnabled(true);
                     ((TextView)findViewById(R.id.spinner)).setText(tipos.get(actual-1));
                     ((TextView)findViewById(R.id.editTextTextMultiLine)).setText(descrpciones.get(actual-1));
-                    mostrarImagenDesdeBase64(imagenes.get(actual-1));
+                    convertirBase64ABitmap(imagenes.get(actual-1));
                     actual--;
                 }
 
@@ -80,7 +80,7 @@ public class ver_incidente extends AppCompatActivity {
                     back1.setEnabled(true);
                     ((TextView)findViewById(R.id.spinner)).setText(tipos.get(actual+1));
                     ((TextView)findViewById(R.id.editTextTextMultiLine)).setText(descrpciones.get(actual+1));
-                    mostrarImagenDesdeBase64(imagenes.get(actual+1));
+                    convertirBase64ABitmap(imagenes.get(actual+1));
                     actual++;
                 }
             }
@@ -111,7 +111,7 @@ public class ver_incidente extends AppCompatActivity {
                         }
                         ((TextView)findViewById(R.id.spinner)).setText(tipos.get(0));
                         ((TextView)findViewById(R.id.editTextTextMultiLine)).setText(descrpciones.get(0));
-                        mostrarImagenDesdeBase64(imagenes.get(0));
+                        convertirBase64ABitmap(imagenes.get(0));
                         actual = 0;
                     } else {
                         Toast.makeText(ver_incidente.this, "El camion no se encuentra registrado, no tiene conductor o no cumple con el peso de la carga", Toast.LENGTH_SHORT).show();
@@ -124,20 +124,18 @@ public class ver_incidente extends AppCompatActivity {
         });
     }
 
-    private void mostrarImagenDesdeBase64(List<String> base64Image) {
-        // Decodificar la cadena Base64 en un arreglo de bytes
+    private void convertirBase64ABitmap(List<String> base64Image) {
+        // Decodificar la cadena Base64 en un array de bytes
         LinearLayout layout = findViewById(R.id.scroll);
         layout.removeAllViews();
         for (String img: base64Image) {
-            byte[] decodedString = Base64.decode(img, Base64.DEFAULT);
-
-            // Convertir el arreglo de bytes en un Bitmap
-            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-            // Mostrar el Bitmap en un ImageView
+            byte[] decodedBytes = Base64.decode(img, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
             ImageView imageView = new ImageView(this);
             imageView.setImageBitmap(bitmap);
             layout.addView(imageView);
         }
+
     }
+
 }
