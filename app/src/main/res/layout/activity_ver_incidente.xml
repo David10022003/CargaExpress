@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/bottomNavigationView2"
@@ -74,15 +74,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
-        <HorizontalScrollView
+        <ScrollView
             android:id="@+id/image"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="128dp"
-            app:layout_constraintBottom_toTopOf="@+id/forwardButton"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView43">
@@ -90,10 +89,10 @@
             <LinearLayout
                 android:id="@+id/scroll"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
-        </HorizontalScrollView>
+        </ScrollView>
 
 
         <TextView
@@ -110,7 +109,7 @@
         <TextView
             android:id="@+id/editTextTextMultiLine"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:editable="false"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
@@ -132,6 +131,7 @@
             android:background="@color/blue_color"
             app:layout_constraintBottom_toBottomOf="@+id/layout"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottomNavigationView2"
             app:srcCompat="@drawable/baseline_arrow_back" />
 
         <ImageButton
@@ -142,6 +142,7 @@
             android:background="@color/blue_color"
             app:layout_constraintBottom_toBottomOf="@+id/layout"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottomNavigationView2"
             app:srcCompat="@drawable/baseline_arrow_forward_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

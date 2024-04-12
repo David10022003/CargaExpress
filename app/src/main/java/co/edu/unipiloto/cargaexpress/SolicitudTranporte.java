@@ -6,27 +6,44 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -34,6 +51,8 @@ public class SolicitudTranporte extends AppCompatActivity {
 
     private FirebaseFirestore database;
     private String cedComerciante = "";
+    private PlacesClient placesClient;
+    private AutoCompleteTextView origen, destino;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +60,11 @@ public class SolicitudTranporte extends AppCompatActivity {
         database = FirebaseFirestore.getInstance();
         Intent intent = getIntent();
         cedComerciante = intent.getStringExtra("documento");
+
+        if(!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getAPIKey());
+        }
+        placesClient = Places.createClient(this);
 
         TextInputEditText fechaRecogida = (TextInputEditText) findViewById(R.id.fechaRecogida);
         fechaRecogida.setFocusableInTouchMode(false);
@@ -120,7 +144,76 @@ public class SolicitudTranporte extends AppCompatActivity {
                 timePickerDialog.show();
             }
         });
+        origen = findViewById(R.id.direccionOrigen);
+        destino = findViewById(R.id.direccionDestino);
+        
+        initMaps(origen);
+        initMaps(destino);
     }
+
+    private void initMaps(AutoCompleteTextView autoCompleteTextView) {
+        
+        autoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
+            String selection = (String) parent.getItemAtPosition(position);
+            autoCompleteTextView.setText(selection);
+        });
+
+        autoCompleteTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!s.toString().isEmpty()) {
+                    autocompletePlace(s.toString(), autoCompleteTextView);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+        });
+        
+    }
+    
+    private String getAPIKey(){
+        String apiKey = null;
+        try {
+            Bundle bundle = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA).metaData;
+            apiKey = bundle.getString("com.google.android.geo.API_KEY");
+        } catch (PackageManager.NameNotFoundException e) {
+            recreate();
+        }
+        if (apiKey == null) {
+            recreate();
+        }
+        return apiKey;
+    }
+
+
+    private void autocompletePlace(String query, AutoCompleteTextView autoCompleteTextView) {
+        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
+        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
+                .setSessionToken(token)
+                .setQuery(query)
+                .setCountry("CO")
+                .build();
+
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener(response -> {
+            ArrayList<String> suggestions = new ArrayList<>();
+            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                suggestions.add(prediction.getFullText(null).toString());
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(SolicitudTranporte.this,
+                    android.R.layout.simple_dropdown_item_1line, suggestions);
+            autoCompleteTextView.setAdapter(adapter);
+        }).addOnFailureListener(exception -> {
+            exception.printStackTrace();
+        });
+    }
+
 
 
 
@@ -131,10 +224,6 @@ public class SolicitudTranporte extends AppCompatActivity {
         TextInputEditText alto = (TextInputEditText) findViewById(R.id.alto);
         TextInputEditText ancho = (TextInputEditText) findViewById(R.id.ancho);
         TextInputEditText profundidad = (TextInputEditText) findViewById(R.id.profundidad);
-        TextInputEditText direccionOrigen = (TextInputEditText) findViewById(R.id.direccionOrigen);
-        TextInputEditText ciudadOrigen = (TextInputEditText) findViewById(R.id.ciudadOrigen);
-        TextInputEditText direccionDestino = (TextInputEditText) findViewById(R.id.direccionDestino);
-        TextInputEditText ciudadDestino = (TextInputEditText) findViewById(R.id.ciudadDestino);
         TextInputEditText fechaRecogida = (TextInputEditText) findViewById(R.id.fechaRecogida);
         TextInputEditText horaRecogida = (TextInputEditText) findViewById(R.id.horaRecogida);
         TextInputEditText fechaEntrega = (TextInputEditText) findViewById(R.id.fechaEntrega);
@@ -144,10 +233,8 @@ public class SolicitudTranporte extends AppCompatActivity {
         alto.setError(null);
         ancho.setError(null);
         profundidad.setError(null);
-        direccionOrigen.setError(null);
-        ciudadOrigen.setError(null);
-        direccionDestino.setError(null);
-        ciudadDestino.setError(null);
+        origen.setError(null);
+        destino.setError(null);
         fechaRecogida.setError(null);
         horaRecogida.setError(null);
         fechaEntrega.setError(null);
@@ -177,24 +264,14 @@ public class SolicitudTranporte extends AppCompatActivity {
             profundidad.requestFocus();
             return;
         }
-        if (direccionOrigen.getText().toString().isEmpty()){
-            direccionOrigen.setError("Debe ingresar una dirección de origen valida");
-            direccionOrigen.requestFocus();
+        if (origen.getText().toString().isEmpty()){
+            origen.setError("Debe ingresar una dirección de origen valida");
+            origen.requestFocus();
             return;
         }
-        if (ciudadOrigen.getText().toString().isEmpty()){
-            ciudadOrigen.setError("Debe ingresar una ciudad de origen valida");
-            ciudadOrigen.requestFocus();
-            return;
-        }
-        if (direccionDestino.getText().toString().isEmpty()){
-            direccionDestino.setError("Debe ingresar una dirección de destino valida");
-            direccionDestino.requestFocus();
-            return;
-        }
-        if (ciudadDestino.getText().toString().isEmpty()){
-            ciudadDestino.setError("Debe ingresar una ciudad de origen valida");
-            ciudadDestino.requestFocus();
+        if (destino.getText().toString().isEmpty()){
+            destino.setError("Debe ingresar una dirección de destino valida");
+            destino.requestFocus();
             return;
         }
         if (fechaRecogida.getText().toString().isEmpty()){
@@ -229,14 +306,58 @@ public class SolicitudTranporte extends AppCompatActivity {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String fechaPublicacion = dateFormat.format(new Date());
+        
+        String [] temp = origen.getText().toString().split(",") ;
+        String [] temp1 = destino.getText().toString().split(",");
+        double [] coorOrigen;
+        if((coorOrigen = obtenerCoordenadas(origen.getText().toString())) == null) {
+            origen.setError("Debe ingresar una dirección de origen valida");
+            origen.requestFocus();
+            return;
+        }
+
+        if((obtenerCoordenadas(destino.getText().toString())) == null) {
+            origen.setError("Debe ingresar una dirección de destino valida");
+            origen.requestFocus();
+            return;
+        }
 
         crearCargaDocument(tipoCarga.getSelectedItem().toString(), Integer.parseInt(peso.getText().toString()), (alto.getText().toString() +" X "+ ancho.getText().toString() +" X "+ profundidad.getText().toString()),
-                direccionOrigen.getText().toString(), ciudadOrigen.getText().toString(), direccionDestino.getText().toString(), ciudadDestino.getText().toString(), fechaPublicacion, fechaRecogida.getText().toString(), horaRecogida.getText().toString(),
-                fechaEntrega.getText().toString(), especificaciones.getText().toString(), Integer.parseInt(cedComerciante), 0);
+                temp[0], temp[1]+"-"+temp[2], temp1[0], temp1[1]+"-"+temp1[2], fechaPublicacion, fechaRecogida.getText().toString(), horaRecogida.getText().toString(),
+                fechaEntrega.getText().toString(), especificaciones.getText().toString(), Integer.parseInt(cedComerciante), 0,
+                coorOrigen[0], coorOrigen[1]);
         misPublicacionesView(view);
     }
 
-    private void crearCargaDocument (String tipoCarga, int peso, String dimensiones, String direccionOrigen, String ciudadOrigen, String direccionDestino, String ciudadDestino, String fechaPublicada, String fechaRecogida, String horaRecogida, String fechaEntrega, String especificaciones, int cedulaComerciante, int cedulaConductor){
+    private double[] obtenerCoordenadas(String strAddress) {
+
+        Geocoder coder = new Geocoder(this);
+        List<Address> address;
+        LatLng p1 = null;
+
+        try {
+            // May throw an IOException
+            address = coder.getFromLocationName(strAddress, 5);
+            if (address == null) {
+                return null;
+            }
+
+            Address location = address.get(0);
+            p1 = new LatLng(location.getLatitude(), location.getLongitude());
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        if (p1 != null) {
+            // Utiliza las coordenadas obtenidas
+            return new double[] { p1.latitude,  p1.longitude};
+        }
+        return null;
+    }
+
+    private void crearCargaDocument (String tipoCarga, int peso, String dimensiones, String direccionOrigen, String ciudadOrigen, String direccionDestino, String ciudadDestino, String fechaPublicada, String fechaRecogida, String horaRecogida, String fechaEntrega, String especificaciones, int cedulaComerciante, int cedulaConductor,
+                                     double latitud, double longitud){
         Map<String, Object> cargaData = new HashMap<>();
         cargaData.put("tipoCarga", tipoCarga);
         cargaData.put("peso", peso);
@@ -252,6 +373,8 @@ public class SolicitudTranporte extends AppCompatActivity {
         cargaData.put("especificaciones", especificaciones);
         cargaData.put("comerciante", cedulaComerciante);
         cargaData.put("conductor", cedulaConductor);
+        cargaData.put("latitud", latitud);
+        cargaData.put("longitud", longitud);
         cargaData.put("estado", "publicado");
 
         CollectionReference cargasRef = database.collection("cargas");

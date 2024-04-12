@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -50,6 +54,7 @@ public class AplicarCarga extends AppCompatActivity {
     private Usuario user;
     private static Carga carga;
 
+    ImageButton errorButton = null, locationButton;
 
     private FirebaseFirestore database;
     private List<Camion> camiones;
@@ -78,35 +83,12 @@ public class AplicarCarga extends AppCompatActivity {
             else
                 ((Button) findViewById(R.id.btn_publicarSolicitud_transporte)).setVisibility(View.INVISIBLE);
         }
-        else if (carga.getEstado().equals("En viaje")) {
+        else if (carga.getEstado().equals("En viaje") || carga.getEstado().equals("En recorrido alterno")) {
             if (!user.getRol().equals("Propietario de camion")) {
                 ((Button) findViewById(R.id.btn_publicarSolicitud_transporte)).setText(R.string.finalizar_viaje);
                 ((Button) findViewById(R.id.btn_publicarSolicitud_transporte)).setBackgroundColor(getResources().getColor(R.color.red));
                 if(user.getRol().equals("Conductor")) {
-                    ImageButton button = new ImageButton(this);
-                    ConstraintLayout constraint = findViewById(R.id.layout);
-                    button.setImageDrawable(getResources().getDrawable(R.drawable.baseline_error_24));
-                    button.setBackground(getResources().getDrawable(R.drawable.error_button));
-                    button.setPadding(20, 15, 20, 15);
-                    ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
-                            ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                            ConstraintLayout.LayoutParams.WRAP_CONTENT
-                    );
-                    params.endToEnd = constraint.getId();
-                    params.topToTop = constraint.findViewById(R.id.estado).getId();
-                    params.bottomToBottom = constraint.findViewById(R.id.estado).getId();
-                    params.setMarginEnd(16);
-
-                    button.setLayoutParams(params);
-
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            notificarIncidencia();
-                        }
-                    });
-
-                    constraint.addView(button);
+                    crearBtnIncidencia();
                 }
             }
             else
@@ -115,6 +97,20 @@ public class AplicarCarga extends AppCompatActivity {
 
             if(user.getRol().equals("Conductor")) {
                 ((Button) findViewById(R.id.btn_publicarSolicitud_transporte)).setText(R.string.continuar_viaje);
+                Button btn_recorridoAlterno = (Button) findViewById(R.id.btn_realizarRecorridoAlterno);
+                btn_recorridoAlterno.setBackgroundColor(getResources().getColor(R.color.orange));
+
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) btn_recorridoAlterno.getLayoutParams();
+                params.height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
+                btn_recorridoAlterno.setLayoutParams(params);
+
+                btn_recorridoAlterno.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        notificarRecorridoAlterno();
+                    }
+                });
+
 
             }
             else
@@ -134,6 +130,7 @@ public class AplicarCarga extends AppCompatActivity {
         ((Button) findViewById(R.id.btn_publicarSolicitud_transporte)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 detalle_carga();
             }
         });
@@ -142,6 +139,78 @@ public class AplicarCarga extends AppCompatActivity {
         mostrarDatos();
         if(user.getRol().equals("Propietario de camion"))
             buscarCamion(user.getCedula());
+
+        crearBtnUbicacion();
+    }
+
+    private void crearBtnIncidencia() {
+
+
+        errorButton = new ImageButton(this);
+        ConstraintLayout constraint = findViewById(R.id.layout);
+        errorButton.setImageDrawable(getResources().getDrawable(R.drawable.baseline_error_24));
+        errorButton.setBackground(getResources().getDrawable(R.drawable.error_button));
+        errorButton.setPadding(20, 15, 20, 15);
+        errorButton.setId(View.generateViewId());
+        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.endToEnd = constraint.getId();
+        params.topToTop = constraint.findViewById(R.id.estado).getId();
+        params.bottomToBottom = constraint.findViewById(R.id.estado).getId();
+        params.setMarginEnd(16);
+
+        errorButton.setLayoutParams(params);
+
+        errorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notificarIncidencia();
+            }
+        });
+
+        constraint.addView(errorButton);
+
+    }
+
+    private void crearBtnUbicacion() {
+
+        locationButton = new ImageButton(this);
+        ConstraintLayout constraint = findViewById(R.id.layout);
+        locationButton.setImageDrawable(getResources().getDrawable(R.drawable.baseline_location_on_24));
+        locationButton.setBackground(getResources().getDrawable(R.drawable.location_button));
+        locationButton.setPadding(20, 15, 20, 15);
+        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        params.topToTop = constraint.findViewById(R.id.estado).getId();
+        params.bottomToBottom = constraint.findViewById(R.id.estado).getId();
+        if (user.getRol().equals("Conductor")) {
+            if (carga.getEstado().equals("En viaje") || carga.getEstado().equals("En recorrido alterno"))
+                params.endToStart = errorButton.getId();
+            else
+                params.endToEnd = constraint.getId();
+        }
+        else
+            params.endToEnd = constraint.getId();
+        params.setMarginEnd(16);
+        locationButton.setLayoutParams(params);
+
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AplicarCarga.this, CargaUbication.class);
+                intent.putExtra("carga", carga);
+                startActivity(intent);
+
+            }
+        });
+
+        constraint.addView(locationButton);
+
     }
 
     private void notificarIncidencia() {
@@ -188,6 +257,10 @@ public class AplicarCarga extends AppCompatActivity {
                     showInputDialogConductor();
                 break;
             case "En viaje":
+                if(!user.getRol().equals("Propietario de camion"))
+                    finalizarViaje();
+                break;
+            case "En recorrido alterno":
                 if(!user.getRol().equals("Propietario de camion"))
                     finalizarViaje();
                 break;
@@ -467,6 +540,14 @@ public class AplicarCarga extends AppCompatActivity {
 
     public static void setCarga(Carga carga) {
         AplicarCarga.carga = carga;
+    }
+    private void notificarRecorridoAlterno () {
+        Map<String, Object> usuarioData = new HashMap<>();
+        usuarioData.put("estado", "En recorrido alterno");
+        carga.setEstado("En recorrido alterno");
+        database.collection("cargas").document(carga.getCodigo()).update(usuarioData);
+        HomeFragment.setCargas(carga);
+        recreate();
     }
 
 }

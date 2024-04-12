@@ -129,7 +129,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         DocumentSnapshot document = querySnapshot.getDocuments().get(0);
                         Carga carga = new Carga(document.getId(), document.getString("tipoCarga"), document.getLong("peso"), document.getString("dimensiones"), document.getString("direccionOrigen"), document.getString("ciudadOrigen"),
                                 document.getString("direccionDestino"), document.getString("ciudadDestino"), document.getString("fechaPublicacion"), document.getString("fechaRecogida"), document.getString("horaRecogida"),
-                                document.getString("fechaEntrega"), document.getString("especificaciones"), document.getLong("comerciante"), document.getLong("conductor"), document.getString("estado"));
+                                document.getString("fechaEntrega"), document.getString("especificaciones"), document.getLong("comerciante"), document.getLong("conductor"), document.getString("estado"),
+                                document.getDouble("latitud"), document.getDouble("longitud"));
                         Log.d("buscarCargaNotificacion", "id: " +carga.getCodigo()+ " tipo: " +carga.getTipoCarga()+ " peso: " +carga.getPeso()+ " dimensiones: " +carga.getDimensiones()+ " direccionOrigen: " +carga.getDireccionOrigen()+ " ciudadOrigen: " +carga.getCiudadOrigen()+ " direccionDestino: " +carga.getDireccionDestino()+ " ciudadDestino: " +carga.getCiudadDestino()+ " fechaPublicada: " +carga.getFechaPublicada()+ " fechaRecogida: " +carga.getFechaRecogida()+ " horaRecogida: " +carga.getHoraRecogida()+ " fechaEntrega: " +carga.getFechaEntrega()+ " especif: " + carga.getEspecificaciones()+ " cedComerciante: " + carga.getCedulaComerciante()+ " cedConductor: " + carga.getCedulaConductor());
                         crearSimpleNotification(context, titulo, texto, bigText, type, carga);
                     }

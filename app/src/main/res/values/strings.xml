@@ -124,4 +124,14 @@
     <string name="ir_a_configuracion">IR A CONFIGURACIÓN</string>
     <string name="continuar">CONTINUAR</string>
     <string name="descripcion_permiso">Si desea recibir notificaciones, habilite este permiso en la configuración de la aplicación. \\n\\nAl continuar acepta que no recibirás ninguna notificación ni estará informado de lo que suceda dentro de la aplicación</string>
+    <string name="title_activity_carga_ubication">CargaUbication</string>
+    <string name="text_genero">Genero</string>
+    <string-array name="genero">
+        <item>Masculino</item>
+        <item>Femenino</item>
+        <item>No binario</item>
+    </string-array>
+    <string name="confirmarContraseña">Confirmar contraseña</string>
+    <string name="fechaNacimiento">Fecha de nacimiento</string>
+    <string name="realizarRecorridoAlterno">Realizar recorrido alterno</string>
 </resources>

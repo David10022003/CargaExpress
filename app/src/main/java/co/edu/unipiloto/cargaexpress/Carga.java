@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 public class Carga implements Parcelable{
+    private double latitud;
+    private double longitud;
     private String codigo;
     private String tipoCarga;
     private long peso;
@@ -26,7 +28,10 @@ public class Carga implements Parcelable{
 
     public Carga() {}
 
-    public Carga(String codigo, String tipoCarga, long peso, String dimensiones, String direccionOrigen, String ciudadOrigen, String direccionDestino, String ciudadDestino, String fechaPublicada, String fechaRecogida, String horaRecogida, String fechaEntrega, String especificaciones, long cedulaComerciante, long cedulaConductor, String estado) {
+    public Carga(String codigo, String tipoCarga, long peso, String dimensiones, String direccionOrigen,
+                 String ciudadOrigen, String direccionDestino, String ciudadDestino, String fechaPublicada,
+                 String fechaRecogida, String horaRecogida, String fechaEntrega, String especificaciones, long cedulaComerciante,
+                 long cedulaConductor, String estado, double latitud, double longitud) {
         this.codigo = codigo;
         this.tipoCarga = tipoCarga;
         this.peso = peso;
@@ -42,7 +47,25 @@ public class Carga implements Parcelable{
         this.especificaciones = especificaciones;
         this.cedulaComerciante = cedulaComerciante;
         this.cedulaConductor = cedulaConductor;
+        this.latitud = latitud;
+        this.longitud = longitud;
         this.estado = estado;
+    }
+
+    public double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(double latitud) {
+        this.latitud = latitud;
+    }
+
+    public double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(double longitud) {
+        this.longitud = longitud;
     }
 
     public String getCodigo() {
@@ -194,6 +217,8 @@ public class Carga implements Parcelable{
         this.cedulaComerciante = in.readLong();
         this.cedulaConductor = in.readLong();
         this.estado = in.readString();
+        this.latitud = in.readDouble();
+        this.longitud = in.readDouble();
 
     }
     @Override
@@ -219,6 +244,8 @@ public class Carga implements Parcelable{
         dest.writeLong(cedulaComerciante);
         dest.writeLong(cedulaConductor);
         dest.writeString(estado);
+        dest.writeDouble(latitud);
+        dest.writeDouble(longitud);
     }
 
     public static final Parcelable.Creator<Carga> CREATOR = new Creator<Carga>() {

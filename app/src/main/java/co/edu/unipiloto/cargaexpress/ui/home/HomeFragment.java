@@ -1,6 +1,8 @@
 package co.edu.unipiloto.cargaexpress.ui.home;
 
 
+import static androidx.core.content.ContextCompat.startForegroundService;
+
 import android.content.Intent;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
@@ -43,6 +45,7 @@ import java.util.List;
 
 import co.edu.unipiloto.cargaexpress.AplicarCarga;
 import co.edu.unipiloto.cargaexpress.Carga;
+import co.edu.unipiloto.cargaexpress.LocationService;
 import co.edu.unipiloto.cargaexpress.R;
 import co.edu.unipiloto.cargaexpress.Usuario;
 import co.edu.unipiloto.cargaexpress.carga_express;
@@ -132,8 +135,19 @@ public class HomeFragment extends Fragment {
     private void llenarLista(QuerySnapshot query) {
         Carga temp;
         for(DocumentSnapshot result : query.getDocuments()) {
-            temp = new Carga(result.getId(), result.getString("tipoCarga"),  result.getLong("peso"), result.getString("dimensiones"), result.getString("direccionOrigen"), result.getString("ciudadOrigen"), result.getString("direccionDestino"), result.getString("ciudadDestino"), result.getString("fechaPublicacion"), result.getString("fechaRecogida"), result.getString("horaRecogida"), result.getString("fechaEntrega"), result.getString("especificaciones"), result.getLong("comerciante"), result.getLong("conductor"), result.getString("estado"));
+            temp = new Carga(result.getId(), result.getString("tipoCarga"),  result.getLong("peso"),
+                    result.getString("dimensiones"), result.getString("direccionOrigen"),
+                    result.getString("ciudadOrigen"), result.getString("direccionDestino"),
+                    result.getString("ciudadDestino"), result.getString("fechaPublicacion"),
+                    result.getString("fechaRecogida"), result.getString("horaRecogida"),
+                    result.getString("fechaEntrega"), result.getString("especificaciones"),
+                    result.getLong("comerciante"), result.getLong("conductor"), result.getString("estado"),
+                    result.getDouble("latitud"), result.getDouble("longitud"));
+            if(user.getRol().equals("Conductor"))
+                if(temp.getEstado().equals("En viaje") || temp.getEstado().equals("Incidencia") || temp.getEstado().equals("En recorrido alterno"))
+                    rastreo(temp);
             cargas.add(temp);
+
         }
     }
 
@@ -146,6 +160,14 @@ public class HomeFragment extends Fragment {
         for (Carga temp: cargas) {
             if(temp.getCodigo().equals(carga.getCodigo()))
                 cargas.set(cargas.indexOf(temp), carga);
+        }
+    }
+
+    private void rastreo(Carga carga) {
+        Intent serviceIntent = new Intent(requireContext(), LocationService.class);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            serviceIntent.putExtra("carga", carga);
+            startForegroundService(requireContext(), serviceIntent);
         }
     }
 }

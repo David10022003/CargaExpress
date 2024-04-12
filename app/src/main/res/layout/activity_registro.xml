@@ -21,7 +21,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="@+id/imageViewBackground">
+        app:layout_constraintTop_toTopOf="@+id/imageViewBackground"
+        tools:layout_editor_absoluteX="-106dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -167,6 +168,25 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/fechaNacimientoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:padding="5dp"
+                app:boxStrokeColor="@color/blue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/apellidosLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/fechaNacimientoRegistro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/fechaNacimiento"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/documentoLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -175,7 +195,7 @@
                 app:boxStrokeColor="@color/blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/apellidosLayout">
+                app:layout_constraintTop_toBottomOf="@+id/fechaNacimientoLayout">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -202,12 +222,12 @@
                 android:id="@+id/correoLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:padding="5dp"
+                android:layout_marginTop="20dp"
                 app:boxStrokeColor="@color/blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/documentoLayout">
+                app:layout_constraintTop_toBottomOf="@+id/spinner2">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/correoRegistro"
@@ -236,6 +256,25 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/confirmContrasenaLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:padding="5dp"
+                app:boxStrokeColor="@color/blue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contrasenaLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/confirmContrasenaRegistro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/confirmarContraseña"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <Button
                 android:id="@+id/crearCuenta"
@@ -249,7 +288,36 @@
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/contrasenaLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/places_autocomplete_edit_text" />
+
+            <Spinner
+                android:id="@+id/spinner2"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:entries="@array/genero"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView26" />
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/text_genero"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/documentoLayout" />
+
+            <AutoCompleteTextView
+                android:id="@+id/places_autocomplete_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="Introduce una dirección"
+                app:layout_constraintTop_toBottomOf="@id/confirmContrasenaLayout"
+                tools:layout_editor_absoluteX="20dp" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

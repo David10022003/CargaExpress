@@ -95,7 +95,7 @@ public class AsignarConductor extends AppCompatActivity {
                                                         QuerySnapshot querySnapshot = task.getResult();
                                                         if (querySnapshot != null && !querySnapshot.isEmpty()) {
                                                             users.add(new Usuario(querySnapshot.getDocuments().get(0).getId(), querySnapshot.getDocuments().get(0).getString("nombre"), querySnapshot.getDocuments().get(0).getString("apellidos"), querySnapshot.getDocuments().get(0).getString("tipoDocumento"),
-                                                                    querySnapshot.getDocuments().get(0).getString("email"), "", querySnapshot.getDocuments().get(0).getString("rol")));
+                                                                    querySnapshot.getDocuments().get(0).getString("email"), "", querySnapshot.getDocuments().get(0).getString("rol"), querySnapshot.getDocuments().get(0).getString("genero"), querySnapshot.getDocuments().get(0).getString("fechaNacimiento")));
                                                             if(users.size() == camions.size())
                                                                 crearLista();
                                                         }

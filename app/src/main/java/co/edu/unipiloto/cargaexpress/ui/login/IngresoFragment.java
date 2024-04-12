@@ -136,7 +136,7 @@ public class IngresoFragment extends Fragment {
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         DocumentSnapshot document = querySnapshot.getDocuments().get(0);
                         user = new Usuario(document.getId(), document.getString("nombre"), document.getString("apellidos"),
-                                document.getString("tipoDocumento"), document.getString("email"), document.getString("contra"), document.getString("rol"));
+                                document.getString("tipoDocumento"), document.getString("email"), document.getString("contra"), document.getString("rol"), document.getString("genero"), document.getString("fechaNacimiento"));
                         acceder();
                     } else {
                         Toast.makeText(requireContext(), "El usuario no se encuentra registrado", Toast.LENGTH_SHORT).show();

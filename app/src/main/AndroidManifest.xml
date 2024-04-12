@@ -6,9 +6,15 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
     <meta-data
         android:name="com.google.firebase.messaging.default_notification_icon"
-        android:resource="@mipmap/logosinfondo"/>
+        android:resource="@mipmap/logosinfondo" />
 
     <application
         android:allowBackup="true"
@@ -20,6 +26,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CargaExpress"
         tools:targetApi="31">
+        <!--
+             TODO: Before you run your application, you need a Google Maps API key.
+
+             To get one, follow the directions here:
+
+                https://developers.google.com/maps/documentation/android-sdk/get-api-key
+
+             Once you have your API key (it starts with "AIza"), define a new property in your
+             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
+             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyClz_VQvzrSHIpLESzMFzyvaeE_JjmC6LI" />
+
+        <activity
+            android:name=".CargaUbication"
+            android:exported="false"
+            android:label="@string/title_activity_carga_ubication" />
         <activity
             android:name=".AsignarConductor"
             android:exported="false" />
@@ -65,6 +90,11 @@
             android:name=".Ingreso"
             android:exported="false" />
 
+        <service
+            android:name=".LocationService"
+            android:exported="false"
+            android:foregroundServiceType="location">
+        </service>
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">

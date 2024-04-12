@@ -93,7 +93,8 @@ public class Ingreso extends AppCompatActivity {
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         DocumentSnapshot document = querySnapshot.getDocuments().get(0);
                         user = new Usuario(document.getId(), document.getString("nombre"), document.getString("apellidos"),
-                                document.getString("tipoDocumento"), document.getString("email"), document.getString("contra"), document.getString("rol"));
+                                document.getString("tipoDocumento"), document.getString("email"), document.getString("contra"), document.getString("rol"), querySnapshot.getDocuments().get(0).getString("genero"),
+                                document.getString("fechaNacimiento"));
 
                         mainCarga();
                     } else {

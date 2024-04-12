@@ -16,10 +16,13 @@ public class Usuario implements Parcelable {
     private String email;
     private String contra;
     private String rol;
+    private String genero;
+
+    private String fechaNacimiento;
 
     public Usuario() {}
 
-    public Usuario(String cedula, String nombre, String apellidos, String tipoDocumento, String email, String contra, String rol){
+    public Usuario(String cedula, String nombre, String apellidos, String tipoDocumento, String email, String contra, String rol, String genero, String fechaNacimiento){
         this.cedula = cedula;
         this.nombre = nombre;
         this.apellidos = apellidos;
@@ -27,6 +30,16 @@ public class Usuario implements Parcelable {
         this.email = email;
         this.contra = contra;
         this.rol = rol;
+        this.genero = genero;
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public String getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(String fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     public String getCedula() {
@@ -85,6 +98,14 @@ public class Usuario implements Parcelable {
         this.rol = rol;
     }
 
+    public String getGenero() {
+        return genero;
+    }
+
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
     protected Usuario(Parcel in){
         cedula = in.readString();
         nombre = in.readString();
@@ -93,6 +114,8 @@ public class Usuario implements Parcelable {
         email = in.readString();
         contra = in.readString();
         rol = in.readString();
+        genero = in.readString();
+        fechaNacimiento = in.readString();
 
     }
     @Override
@@ -109,6 +132,8 @@ public class Usuario implements Parcelable {
         dest.writeString(email);
         dest.writeString(contra);
         dest.writeString(rol);
+        dest.writeString(genero);
+        dest.writeString(fechaNacimiento);
     }
 
     public static final Creator<Usuario> CREATOR = new Creator<Usuario>() {

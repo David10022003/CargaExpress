@@ -7,7 +7,6 @@
     android:id="@+id/principal"
     tools:context=".AplicarCarga">
 
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/bottomNavigationView2"
         android:layout_width="match_parent"
@@ -386,8 +385,23 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scroll" />
+        app:layout_constraintTop_toBottomOf="@+id/scroll"
+        app:layout_constraintBottom_toTopOf="@+id/btn_realizarRecorridoAlterno"/>
+
+    <Button
+        android:id="@+id/btn_realizarRecorridoAlterno"
+        android:layout_width="match_parent"
+        android:layout_height="0.01dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="3dp"
+        android:backgroundTint="@color/transparent"
+        android:text="@string/realizarRecorridoAlterno"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_publicarSolicitud_transporte"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
