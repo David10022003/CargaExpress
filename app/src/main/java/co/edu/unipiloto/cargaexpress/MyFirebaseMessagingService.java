@@ -58,7 +58,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (message.getData().size() > 0) {
             bigText = message.getData().get("bigText");
             String type = message.getData().get("type");
-            if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado")) {
+            if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado") || type.equalsIgnoreCase("incidenciaNueva") || type.equalsIgnoreCase("recorridoAlterno")) {
                 String idCarga = message.getData().get("idCarga");
                 String titleData = message.getData().get("titleData");
                 buscarCargaNotificacion(this, titleData , bigText, bigText, type, idCarga);
@@ -83,11 +83,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
         Intent intent = new Intent();
-        if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado")) {
+        if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado") || type.equalsIgnoreCase("recorridoAlterno")) {
             Carga carga = (Carga) object;
             intent = new Intent(context, AplicarCarga.class);
             Usuario user = carga_express.user;
             intent.putExtra("user", user);
+            intent.putExtra("carga", carga);
+        }
+        else if (type.equalsIgnoreCase("incidenciaNueva")) {
+            Carga carga = (Carga) object;
+            intent = new Intent(context, ver_incidente.class);
             intent.putExtra("carga", carga);
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
