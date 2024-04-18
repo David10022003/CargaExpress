@@ -97,7 +97,7 @@ public class MisCamiones extends AppCompatActivity {
                                     @Override
                                     public void onClick(View v) {
                                         Intent intent = new Intent(MisCamiones.this, MostrarConductor.class);
-                                        intent.putExtra("cedula", agregar.getConductor()+"");
+                                        intent.getParcelableExtra("cedula");
                                         startActivity(intent);
                                     }
                                 });

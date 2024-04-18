@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -141,13 +142,17 @@ public class carga_express extends AppCompatActivity {
         MyFirebaseMessagingService.eliminarToken(user.getRol());
         MyFirebaseMessagingService.eliminarToken("Todos");
         user = null;
-        editor.remove("user");
+        /*editor.remove("user");
         editor.remove("password");
-        editor.apply();
+        editor.apply();*/
         DrawerLayout drawer = binding.drawerLayout;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
+
+        SQLiteDatabase db = (new SQLiteHelper(this)).getWritableDatabase();
+        db.delete("usuario", null, null);
+        db.close();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_carga_express);
         navController.popBackStack();

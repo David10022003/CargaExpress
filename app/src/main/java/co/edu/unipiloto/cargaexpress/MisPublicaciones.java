@@ -66,18 +66,20 @@ public class MisPublicaciones extends AppCompatActivity {
                             temp.setText(""+agregar.getFechaPublicada());
                             row.addView(temp);
                             if(agregar.getCedulaConductor() == 0){
-                                Button conductor = new Button(MisPublicaciones.this);
-                                conductor.setText("+");
-                                conductor.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-
-                                    }
-                                });
-                                row.addView(conductor);
+                                temp = new TextView(MisPublicaciones.this);
+                                temp.setText("-");
+                                row.addView(temp);
                             }else {
                                 temp = new TextView(MisPublicaciones.this);
                                 temp.setText("" + agregar.getCedulaConductor());
+                                temp.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(MisPublicaciones.this, MostrarCamion.class);
+                                        intent.putExtra("cedula", agregar.getCedulaConductor());
+                                        startActivity(intent);
+                                    }
+                                });
                                 row.addView(temp);
                             }
                             tableLayout.addView(row);

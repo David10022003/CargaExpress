@@ -134,4 +134,5 @@
     <string name="confirmarContraseña">Confirmar contraseña</string>
     <string name="fechaNacimiento">Fecha de nacimiento</string>
     <string name="realizarRecorridoAlterno">Realizar recorrido alterno</string>
+    <string name="detalle_camion">Detalle Camion</string>
 </resources>

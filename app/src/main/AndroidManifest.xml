@@ -26,6 +26,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CargaExpress"
         tools:targetApi="31">
+        <activity
+            android:name=".MostrarCamion"
+            android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -93,8 +96,7 @@
         <service
             android:name=".LocationService"
             android:exported="false"
-            android:foregroundServiceType="location">
-        </service>
+            android:foregroundServiceType="location"></service>
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
