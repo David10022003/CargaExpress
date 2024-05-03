@@ -16,11 +16,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE usuario (id INTEGER PRIMARY KEY, user TEXT, password TEXT)";
         db.execSQL(createTable);
+        createTable = "CREATE TABLE dispositivo (id INTEGER PRIMARY KEY, token TEXT)";
+        db.execSQL(createTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS usuario");
         onCreate(db);
+
     }
 }

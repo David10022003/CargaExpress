@@ -1,48 +1,34 @@
 package co.edu.unipiloto.cargaexpress.ui.login;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import co.edu.unipiloto.cargaexpress.Ingreso;
 import co.edu.unipiloto.cargaexpress.Registro;
 import co.edu.unipiloto.cargaexpress.SQLiteHelper;
 import co.edu.unipiloto.cargaexpress.Usuario;
@@ -50,7 +36,6 @@ import co.edu.unipiloto.cargaexpress.carga_express;
 import co.edu.unipiloto.cargaexpress.databinding.FragmentIngresoBinding;
 
 import co.edu.unipiloto.cargaexpress.R;
-import co.edu.unipiloto.cargaexpress.ui.home.HomeFragment;
 
 public class IngresoFragment extends Fragment {
 

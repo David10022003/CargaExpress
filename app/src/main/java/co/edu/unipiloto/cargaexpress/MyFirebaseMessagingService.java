@@ -1,10 +1,14 @@
 package co.edu.unipiloto.cargaexpress;
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.util.Log;
 
@@ -28,13 +32,22 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.HashMap;
 import java.util.Map;
 
+import co.edu.unipiloto.cargaexpress.ui.home.HomeFragment;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         Log.d("Nuevo Token", token);
-        if (carga_express.user != null)
-            guardarTokenIndividual(carga_express.user.getCedula());
+        //eliminarTokenAntiguo("Todos", this);
+        if (carga_express.user != null){
+            //eliminarTokenAntiguo(carga_express.user.getCedula(), this);
+            //eliminarTokenAntiguo(carga_express.user.getRol(), this);
+            eliminarTokenIndividual(this);
+            guardarTokenIndividual(carga_express.user.getCedula(), this);
+            guardarToken(carga_express.user.getRol());
+            guardarToken("Todos");
+        }
     }
 
     @Override
@@ -58,10 +71,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (message.getData().size() > 0) {
             bigText = message.getData().get("bigText");
             String type = message.getData().get("type");
-            if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado") || type.equalsIgnoreCase("incidenciaNueva") || type.equalsIgnoreCase("recorridoAlterno")) {
+            if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado") || type.equalsIgnoreCase("incidenciaNueva") || type.equalsIgnoreCase("recorridoAlterno") || type.equalsIgnoreCase("enViaje") || type.equalsIgnoreCase("enViajeLuegoDeIncididencia") || type.equalsIgnoreCase("enEsperaDelComerciante") || type.equalsIgnoreCase("finalizado") || type.equalsIgnoreCase("nuevaAplicacion")) {
                 String idCarga = message.getData().get("idCarga");
                 String titleData = message.getData().get("titleData");
                 buscarCargaNotificacion(this, titleData , bigText, bigText, type, idCarga);
+            }
+            else if (type.equalsIgnoreCase("conductorAsignadoCamion")) {
+                String placa = message.getData().get("placa");
+                String titleData = message.getData().get("titleData");
+                crearSimpleNotification(this, titleData, bigText, bigText, type, null);
             }
         } else
             crearSimpleNotification(this, title, content, bigText, "", null);
@@ -83,7 +101,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
         Intent intent = new Intent();
-        if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado") || type.equalsIgnoreCase("recorridoAlterno")) {
+        if (type.equalsIgnoreCase("nuevaCarga") || type.equalsIgnoreCase("conductorAsignado") || type.equalsIgnoreCase("recorridoAlterno") || type.equalsIgnoreCase("enViaje") || type.equalsIgnoreCase("enViajeLuegoDeIncididencia") || type.equalsIgnoreCase("enEsperaDelComerciante") || type.equalsIgnoreCase("finalizado") || type.equalsIgnoreCase("nuevaAplicacion")) {
             Carga carga = (Carga) object;
             intent = new Intent(context, AplicarCarga.class);
             Usuario user = carga_express.user;
@@ -94,6 +112,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Carga carga = (Carga) object;
             intent = new Intent(context, ver_incidente.class);
             intent.putExtra("carga", carga);
+        }
+        else if (type.equalsIgnoreCase("conductorAsignadoCamion")){
+            Usuario user =carga_express.user;
+            intent = new Intent(context, HomeFragment.class);
+            intent.putExtra("user", user);
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -162,8 +185,36 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 });
     }
 
+    public static void guardarTokenIndividual (String idUser, Context context) {
+        guardarToken(idUser);
+        /*FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        String token = task.getResult().getToken();
+                        Log.d("guardarTokenIndSQLite", "Token FCM: " + token);
+                        SQLiteDatabase db = (new SQLiteHelper(context)).getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        values.put("token", token);
+                        db.insert("dispositivo",null,values);
+                    } else {
+                        Log.w("guardarTokenIndSQLite", "Error al obtener el token FCM", task.getException());
+                    }
+                });*/
+    }
+
+    @SuppressLint("Range")
+    private static String obtenerTokenSQLite(Context context){
+        SQLiteDatabase db = (new SQLiteHelper(context)).getReadableDatabase();
+        String token = null;
+        Cursor cursor = db.query("dispositivo", new String[]{"token"}, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            token = cursor.getString(cursor.getColumnIndex("token"));
+            cursor.close();
+        }
+        return token;
+    }
+
     public static void eliminarToken (String rol) {
-        //Eliminar del rol
         String topic = rol.split(" ")[0];
         FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -176,25 +227,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                     }
                 });
-
-        //Eliminar el token individual de la DB
-        FirebaseFirestore.getInstance().document("tokens/"+carga_express.user.getCedula()).delete()
-                .addOnSuccessListener(aVoid -> Log.d("eliminarToken", "Documento eliminado con éxito"))
-                .addOnFailureListener(e -> Log.w("eliminarToken", "Error al eliminar el documento", e));
     }
 
-    public static void guardarTokenIndividual (String idUser) {
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        String token = task.getResult().getToken();
-                        Log.d("guardarTokenIndividual", "Token FCM: " + token);
-                        Map<String, Object> tokenData = new HashMap<>();
-                        tokenData.put("token", token);
-                        FirebaseFirestore.getInstance().collection("tokens").document(idUser).set(tokenData);
-                    } else {
-                        Log.w("guardarTokenIndividual", "Error al obtener el token FCM", task.getException());
-                    }
-                });
+    public static void eliminarTokenIndividual(Context context) {
+        if (carga_express.user != null)
+            eliminarToken(carga_express.user.getCedula());
+        //SQLiteDatabase db = (new SQLiteHelper(context)).getWritableDatabase();
+        //db.delete("dispositivo", null, null);
+        //db.close();
+    }
+
+    private void eliminarTokenAntiguo (String rol, Context context) {
+        String topic = rol.split(" ")[0];
+        String oldToken = obtenerTokenSQLite(context);
+        FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(topic)
+                .addData("action", "unsubscribe")
+                .addData("token", oldToken)
+                .build());
+        Log.d("eliminarTokenAntiguo", "Suscripción anulada del tema: " + topic);
     }
 }

@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation ("androidx.sqlite:sqlite:2.2.0")
     implementation ("commons-net:commons-net:3.8.0")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.google.android.libraries.places:places:2.7.0")
     implementation("com.google.firebase:firebase-analytics")
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))

@@ -120,7 +120,7 @@ public class carga_express extends AppCompatActivity {
         this.user = user;
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_carga_express);
         iniComponents();
-        MyFirebaseMessagingService.guardarTokenIndividual(this.user.getCedula());
+        MyFirebaseMessagingService.guardarTokenIndividual(this.user.getCedula(), this);
         MyFirebaseMessagingService.guardarToken(this.user.getRol());
         MyFirebaseMessagingService.guardarToken("Todos");
     }
@@ -139,6 +139,7 @@ public class carga_express extends AppCompatActivity {
     }
 
     public void salir(View view){
+        MyFirebaseMessagingService.eliminarTokenIndividual(this);
         MyFirebaseMessagingService.eliminarToken(user.getRol());
         MyFirebaseMessagingService.eliminarToken("Todos");
         user = null;

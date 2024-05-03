@@ -8,6 +8,9 @@ import androidx.fragment.app.Fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,15 +26,24 @@ import android.widget.Toast;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Transaction;
 
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
@@ -39,12 +51,15 @@ import org.apache.commons.net.ntp.TimeInfo;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import co.edu.unipiloto.cargaexpress.ui.home.HomeFragment;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -279,8 +294,9 @@ public class AplicarCarga extends AppCompatActivity {
                 }
                 break;
             case  "En espera del comerciante":
-                if(user.getRol().equals("Comerciante"))
+                if(user.getRol().equals("Comerciante")) {
                     finalizarViaje();
+                }
                 break;
         }
 
@@ -298,7 +314,214 @@ public class AplicarCarga extends AppCompatActivity {
         }
         database.collection("cargas").document(carga.getCodigo()).update(usuarioData);
         HomeFragment.setCargas(carga);
-        recreate();
+        traerPlaca(carga);
+    }
+
+    private void traerPlaca(Carga carga) {
+        Query query = database.collection("camiones").whereEqualTo("conductor", carga.getCedulaConductor());
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    String idCamion = task.getResult().getDocuments().get(0).getId();
+                    Log.d("AplicarCarga", "Transacción completada con éxito Traer placa");
+                    actualizarEstadisticas(carga, idCamion);
+                } else {
+                    Toast.makeText(AplicarCarga.this, "Error al obtener camiones:", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private boolean ejecutar = true;
+    private void actualizarEstadisticas(Carga carga, String placa) {
+        Long buscar = carga.getCedulaConductor();
+        Log.d("AplicarCarga", "Transacción completada entrada en estadisticas");
+        placa = placa.replaceAll(" ", "").toUpperCase();
+        placa = placa+""+Calendar.getInstance().get(Calendar.YEAR);
+        final String id = placa;
+
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        String[] monthNames = {
+                "enero", "febrero", "marzo", "abril", "mayo", "junio",
+                "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"};
+
+        DocumentReference docRef = database.collection("estadisicas").document(id);
+        database.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                DocumentSnapshot snapshot = transaction.get(docRef);
+                Log.d("AplicarCarga", "Transacción completada con éxito entrando en if");
+                    verficarExistencia(snapshot, monthNames, month, docRef, transaction, id);
+
+                return null;
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("AplicarCarga", "Transacción completada con éxito");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("AplicarCarga", "Error en la transacción", e);
+            }
+        });
+
+
+
+    }
+
+    private void verficarExistencia(DocumentSnapshot snapshot, String[] monthNames, int month,DocumentReference docRef, Transaction transaction, String id) {
+        if(ejecutar)
+            ejecutar = false;
+        else
+            return;
+        if (snapshot.exists()) {
+            final List<Long> arregloActual = (List<Long>) snapshot.get(monthNames[month]);
+            List<Long> nuevosDatos = new ArrayList<>();
+            List<Long> obtenerDatos = calcularDatos();
+            for (Long elemento : arregloActual) {
+                nuevosDatos.add(elemento + obtenerDatos.get(arregloActual.indexOf(elemento)));
+            }
+            Map<String, Object> updateData = new HashMap<>();
+            updateData.put(monthNames[month], nuevosDatos);
+
+            Log.d("AplicarCarga", "Transacción completada con éxito actualizar estadisticas exists" + nuevosDatos.size());
+            transaction.update(docRef, monthNames[month], nuevosDatos);
+
+        }
+        else {
+            Map<String, Object> datosDocumento = new HashMap<>();
+            List<Long> nuevosDatos = new ArrayList<>();
+            for(int i = 0; i < 11; i++) {
+                nuevosDatos = new ArrayList<>();
+                if (i == month) {
+                    nuevosDatos = calcularDatos();
+                    Log.d("AplicarCarga", "Transacción completada con éxito estadisticas no exists " + nuevosDatos.size());
+                }
+                else  {
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(0L);
+                }
+                datosDocumento.put(monthNames[i], nuevosDatos);
+            }
+            Log.d("AplicarCarga", "Transacción completada con éxito estadisticas no exists");
+            guardarColeccion(datosDocumento, id);
+        }
+    }
+
+    private void guardarColeccion(Map<String, Object> datosDocumento, String id) {
+
+        database.collection("estadisicas")
+                .document(id)
+                .set(datosDocumento)
+                .addOnSuccessListener(new OnSuccessListener() {
+                    @Override
+                    public void onSuccess(Object o) {
+                        Log.d("AplicarCarga", "Transacción completada con éxito crear collection " + datosDocumento.size());
+                        recreate();
+
+                    }
+
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("AplicarCarga", "Transacción completada con éxito denegar collection");
+                    }
+                });
+
+    }
+
+    private List<Long> calcularDatos() {
+        List<Long> calcular = new ArrayList<>();
+        calcular.add(1L);
+        double [] temp1 = convertirDirLat(carga.getDireccionOrigen()+", "+carga.getCiudadOrigen());
+        double [] temp2 = convertirDirLat(carga.getDireccionDestino()+", "+carga.getCiudadDestino());
+        double [] fin = new double[4];
+        fin[0] = temp1[0];
+        fin[1] = temp1[1];
+        fin[2] = temp2[0];
+        fin[3] = temp2[1];
+        double distancia = calcularDistancia(fin)/1000;
+        calcular.add(Long.valueOf((int)distancia));
+        calcular.add(Long.valueOf((int)(distancia*0.4)));
+        calcular.add(diferenciaHoras());
+        calcular.add(carga.getPeso());
+        return calcular;
+    }
+
+    private Long diferenciaHoras() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            // Convertir las cadenas a objetos Date
+            Date fechaEntregaDate = sdf.parse(carga.getFechaRecogida());
+            Date fechaPublicacionDate = sdf.parse(carga.getFechaEntrega());
+
+            // Calcular la diferencia entre las fechas en milisegundos
+            long diferenciaMilisegundos = fechaEntregaDate.getTime() - fechaPublicacionDate.getTime();
+
+            // Convertir la diferencia a horas
+            long diferenciaHoras = TimeUnit.MILLISECONDS.toHours(diferenciaMilisegundos);
+
+            return diferenciaHoras;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0L;
+    }
+
+    private String getAPIKey(){
+        String apiKey = null;
+        try {
+            Bundle bundle = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA).metaData;
+            apiKey = bundle.getString("com.google.android.geo.API_KEY");
+        } catch (PackageManager.NameNotFoundException e) {
+            recreate();
+        }
+        if (apiKey == null) {
+            recreate();
+        }
+        return apiKey;
+    }
+
+    public double calcularDistancia(double[] coordenadas) {
+        double earthRadius = 6371e3; // Radio de la Tierra en metros
+        double dLat = Math.toRadians(coordenadas[0]- coordenadas[2]);
+        double dLon = Math.toRadians(coordenadas[1]- coordenadas[3]);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(coordenadas[0])) * Math.cos(Math.toRadians(coordenadas[2])) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = earthRadius * c;
+        return distance;
+    }
+
+    public double[] convertirDirLat(String direccion) {
+
+        Geocoder geocoder = new Geocoder(this);
+
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(direccion, 1);
+
+            // Verificar si se encontraron resultados
+            if (addresses != null && !addresses.isEmpty()) {
+                // Obtener las coordenadas de latitud y longitud del primer resultado
+                double latitud = addresses.get(0).getLatitude();
+                double longitud = addresses.get(0).getLongitude();
+                return new double [] {latitud, longitud};
+            } else {
+                Log.d("Geocodificación", "No se encontraron resultados para la dirección proporcionada.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new double[] {0,0,0,0};
     }
 
     private void showInputDialogConductor() {

@@ -135,4 +135,33 @@
     <string name="fechaNacimiento">Fecha de nacimiento</string>
     <string name="realizarRecorridoAlterno">Realizar recorrido alterno</string>
     <string name="detalle_camion">Detalle Camion</string>
+    <string name="dashboard">Mis estadisticas</string>
+    <string name="numero_viajes">N° viajes</string>
+    <string name="medidas">Variable</string>
+    <string name="valor">Valor</string>
+    <string name="unidades">(unidad)"</string>
+    <string name="tiempo_viaje">Tiempo de viaje</string>
+    <string name="horas">(horas)</string>
+    <string name="numero_toneladas">Toneladas transportadas</string>
+    <string name="distancia_recorrida">Distancia recorrida</string>
+    <string name="combustible">Combustible consumido</string>
+    <string name="kilometros">(kilometros)</string>
+    <string name="galones">(galones)</string>
+    <string name="toneladas">(toneladas)</string>
+    <string-array name="meses">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+
+
+    </string-array>
 </resources>
