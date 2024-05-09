@@ -335,6 +335,7 @@ public class AplicarCarga extends AppCompatActivity {
 
     private boolean ejecutar = true;
     private void actualizarEstadisticas(Carga carga, String placa) {
+        actualizarComerciante();
         Long buscar = carga.getCedulaConductor();
         Log.d("AplicarCarga", "Transacción completada entrada en estadisticas");
         placa = placa.replaceAll(" ", "").toUpperCase();
@@ -370,6 +371,43 @@ public class AplicarCarga extends AppCompatActivity {
 
 
 
+    }
+
+    private void actualizarComerciante() {
+        DocumentReference docRef = database.collection("estadisicas").document(user.getCedula()+""+Calendar.getInstance().get(Calendar.YEAR));
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        String[] monthNames = {
+                "enero", "febrero", "marzo", "abril", "mayo", "junio",
+                "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"};
+        database.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                DocumentSnapshot snapshot = transaction.get(docRef);
+                Log.d("AplicarCarga", "Transacción completada con éxito entrando en if");
+                final List<Long> arregloActual = (List<Long>) snapshot.get(monthNames[month]);
+                arregloActual.set(1, arregloActual.get(1) +1);
+                arregloActual.set(2, arregloActual.get(2) -1);
+                if(carga.getIncidencias() > 0)
+                    arregloActual.set(4, 1L);
+                Map<String, Object> updateData = new HashMap<>();
+                updateData.put(monthNames[month], arregloActual);
+
+                Log.d("AplicarCarga", "Transacción completada con éxito actualizar estadisticas exists" + arregloActual.size());
+                transaction.update(docRef, monthNames[month], arregloActual);
+
+                return null;
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("AplicarCarga", "Transacción completada con éxito");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("AplicarCarga", "Error en la transacción", e);
+            }
+        });
     }
 
     private void verficarExistencia(DocumentSnapshot snapshot, String[] monthNames, int month,DocumentReference docRef, Transaction transaction, String id) {
@@ -412,6 +450,7 @@ public class AplicarCarga extends AppCompatActivity {
             Log.d("AplicarCarga", "Transacción completada con éxito estadisticas no exists");
             guardarColeccion(datosDocumento, id);
         }
+        recreate();
     }
 
     private void guardarColeccion(Map<String, Object> datosDocumento, String id) {

@@ -74,19 +74,32 @@ public class Dashboard extends Fragment {
         database = FirebaseFirestore.getInstance();
         rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
         user = carga_express.user;
-        placas = new ArrayList<>();
-        camiones = new ArrayList<>();
         categorias = new ArrayList<>();
-        categorias.add("Cantidad de envios");
-        categorias.add("Distancia recorrida");
-        categorias.add("Combustible consumido");
-        categorias.add("Tiempo de envios");
-        categorias.add("Toneladas transportadas");
-        obtenerPlacas();
-        getAnios();
-        adaptadorSpinner(binding.anio, years, "anios");
-        adaptadorSpinner(binding.categoria, categorias, "categorias");
-        iniciarTabla(binding);
+        if(user.getRol().equals("Propietario de camion")) {
+            placas = new ArrayList<>();
+            camiones = new ArrayList<>();
+            categorias.add("Cantidad de envios");
+            categorias.add("Distancia recorrida");
+            categorias.add("Combustible consumido");
+            categorias.add("Tiempo de envios");
+            categorias.add("Toneladas transportadas");
+            obtenerPlacas();
+            getAnios();
+            adaptadorSpinner(binding.anio, years, "anios");
+            adaptadorSpinner(binding.categoria, categorias, "categorias");
+            iniciarTabla(binding);
+        } else if (user.getRol().equals("Comerciante")) {
+            binding.placaElec.setVisibility(View.INVISIBLE);
+            categorias.add("Cantidad de publicaciones");
+            categorias.add("Publicaciones entregadas");
+            categorias.add("Publicaciones no finalizadas");
+            categorias.add("Numero de incidencias");
+            categorias.add("Publicaciones con incidentes");
+            getAnios();
+            adaptadorSpinner(binding.anio, years, "anios");
+            adaptadorSpinner(binding.categoria, categorias, "categorias");
+            iniciarTabla(binding);
+        }
         return binding.getRoot();
     }
 
@@ -95,43 +108,78 @@ public class Dashboard extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(camiones != null && !camiones.isEmpty() && binding.placaElec.getSelectedItemPosition() != -1) {
-                    String placa = binding.placaElec.getSelectedItem().toString();
+                if (user.getRol().equals("Propietario de camion")) {
+                    if (camiones != null && !camiones.isEmpty() && binding.placaElec.getSelectedItemPosition() != -1) {
+                        String placa = binding.placaElec.getSelectedItem().toString();
+                        int mes = spinner.getSelectedItemPosition();
+                        int pos = placas.indexOf(placa) - 1;
+                        MedicionCamion def = null;
+                        for (MedicionCamion temp : camiones) {
+                            if (temp.getPlaca().equals(placa.toUpperCase().replaceAll(" ", "") + binding.anio.getSelectedItem().toString()))
+                                def = temp;
+                        }
+                        if (def != null && mes < def.getDatos().size()) {
+                            TextView temp = binding.numeroViajes;
+                            temp.setText(def.getDatos().get(mes).get(0) + " (unidad)");
+                            temp = binding.distanciaRecorrida;
+                            temp.setText(def.getDatos().get(mes).get(1) + " (kilometros)");
+                            temp = binding.combustible;
+                            temp.setText(def.getDatos().get(mes).get(2) + " (galones)");
+                            temp = binding.tiempoViaje;
+                            temp.setText(def.getDatos().get(mes).get(3) + " (horas)");
+                            temp = binding.numeroToneladas;
+                            temp.setText(def.getDatos().get(mes).get(4) + " (toneladas)");
+                            return;
+                        } else {
+                            TextView temp = binding.numeroViajes;
+                            temp.setText("");
+                            temp = binding.distanciaRecorrida;
+                            temp.setText("");
+                            temp = binding.combustible;
+                            temp.setText("");
+                            temp = binding.tiempoViaje;
+                            temp.setText("");
+                            temp = binding.numeroToneladas;
+                            temp.setText("");
+                            return;
+                        }
+                    }
+
+                } else if (user.getRol().equals("Comerciante")) {
+                    String placa = user.getCedula();
                     int mes = spinner.getSelectedItemPosition();
-                    int pos = placas.indexOf(placa) -1;
                     MedicionCamion def = null;
-                    for(MedicionCamion temp : camiones) {
-                        if (temp.getPlaca().equals(placa.toUpperCase().replaceAll(" ", "")+binding.anio.getSelectedItem().toString()))
+                    for (MedicionCamion temp : camiones) {
+                        if (temp.getPlaca().equals(placa+binding.anio.getSelectedItem().toString()))
                             def = temp;
                     }
-                        if ( def != null && mes < def.getDatos().size()) {
-                            TextView temp = binding.numeroViajes;
-                            temp.setText(def.getDatos().get(mes).get(0)+" (unidad)");
-                            temp = binding.distanciaRecorrida;
-                            temp.setText(def.getDatos().get(mes).get(1)+" (horas)");
-                            temp = binding.combustible;
-                            temp.setText(def.getDatos().get(mes).get(2)+" (toneladas)");
-                            temp = binding.tiempoViaje;
-                            temp.setText(def.getDatos().get(mes).get(3)+" (kilometros)");
-                            temp = binding.numeroToneladas;
-                            temp.setText(def.getDatos().get(mes).get(4)+" (galones)");
-                            return;
-                        }
-                        else {
-                            TextView temp = binding.numeroViajes;
-                            temp.setText("");
-                            temp = binding.distanciaRecorrida;
-                            temp.setText("");
-                            temp = binding.combustible;
-                            temp.setText("");
-                            temp = binding.tiempoViaje;
-                            temp.setText("");
-                            temp = binding.numeroToneladas;
-                            temp.setText("");
-                            return;
-                        }
+                    if (def != null && mes < def.getDatos().size()) {
+                        TextView temp = binding.numeroViajes;
+                        temp.setText(def.getDatos().get(mes).get(0) + " (unidad)");
+                        temp = binding.distanciaRecorrida;
+                        temp.setText(def.getDatos().get(mes).get(1) + " (unidad)");
+                        temp = binding.combustible;
+                        temp.setText(def.getDatos().get(mes).get(2) + " (unidad)");
+                        temp = binding.tiempoViaje;
+                        temp.setText(def.getDatos().get(mes).get(3) + " (unidad)");
+                        temp = binding.numeroToneladas;
+                        temp.setText(def.getDatos().get(mes).get(4) + " (unidad)");
+                        return;
+                    } else {
+                        TextView temp = binding.numeroViajes;
+                        temp.setText("");
+                        temp = binding.distanciaRecorrida;
+                        temp.setText("");
+                        temp = binding.combustible;
+                        temp.setText("");
+                        temp = binding.tiempoViaje;
+                        temp.setText("");
+                        temp = binding.numeroToneladas;
+                        temp.setText("");
+                        return;
                     }
                 }
+            }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -147,15 +195,20 @@ public class Dashboard extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if((elemento.equals("placas") || elemento.equals("categorias")) && (!camiones.isEmpty()) && camiones != null) {
-                    int indexCam;
-                    if(binding.placaElec.getSelectedItemPosition() == -1)
-                        indexCam = -1;
-                    else
-                        indexCam = placas.indexOf(binding.placaElec.getSelectedItem().toString()) -1;
-                    construir(binding.placaElec.getSelectedItem().toString(), binding.categoria.getSelectedItemPosition());
+                    if(user.getRol().equals("Propietario de camion")) {
+                        int indexCam;
+                        if (binding.placaElec.getSelectedItemPosition() == -1)
+                            indexCam = -1;
+                        else
+                            indexCam = placas.indexOf(binding.placaElec.getSelectedItem().toString()) - 1;
+                        construir(binding.placaElec.getSelectedItem().toString(), binding.categoria.getSelectedItemPosition());
+                    } else if(user.getRol().equals("Comerciante")) {
+                        construir(user.getCedula(), binding.categoria.getSelectedItemPosition());
+                    }
 
                 }
-                else if (elemento.equals("anios") && !placas.isEmpty() && placas != null) {
+                else if ((user.getRol().equals("Comerciante") || (!placas.isEmpty() && placas != null)) && elemento.equals("anios")) {
+                    Toast.makeText(requireContext(), "Entro en anios", Toast.LENGTH_SHORT).show();
                     String elegido = binding.anio.getSelectedItem().toString();
                     obtenerDatos(elegido);
                 }
@@ -170,24 +223,27 @@ public class Dashboard extends Fragment {
     private void obtenerDatos(String anio) {
 
         camiones = new ArrayList<>();
+        Query query = null;
+        if(user.getRol().equals("Propietario de camion")) {
+            List<String> busquedas = new ArrayList<>();
+            for (String placa : placas) {
+                String busqueda = placa + anio;
+                busqueda = busqueda.replaceAll(" ", "").toUpperCase();
+                busquedas.add(busqueda);
+            }
 
-        List<String> busquedas = new ArrayList<>();
-        for (String placa : placas) {
-            String busqueda = placa + anio;
-            busqueda = busqueda.replaceAll(" ","").toUpperCase();
-            busquedas.add(busqueda);
-        }
-
-        Query query = database.collection("estadisicas").whereIn(FieldPath.documentId(), busquedas);
+            query = database.collection("estadisicas").whereIn(FieldPath.documentId(), busquedas);
+        } else if (user.getRol().equals("Comerciante"))
+            query = database.collection("estadisicas").whereEqualTo(FieldPath.documentId(), user.getCedula()+anio);
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 String actual="";
-                List<List<Long>> datos = new ArrayList<>();
                 if (task.isSuccessful()) {
                     QuerySnapshot querySnapshot = task.getResult();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         for(QueryDocumentSnapshot document : querySnapshot) {
+                            List<List<Long>> datos = new ArrayList<>();
                             actual = document.getId();
                             if(document.contains("enero"))
                                 datos.add((List<Long>) document.getData().get("enero"));
@@ -241,13 +297,16 @@ public class Dashboard extends Fragment {
             String[] meses = {"", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
             MedicionCamion camion = null;
             for (MedicionCamion temp : camiones) {
-                if (temp.getPlaca().equals(placa.toUpperCase().replaceAll(" ", "")+binding.anio.getSelectedItem().toString()))
+                if (temp.getPlaca().equals(placa.toUpperCase().replaceAll(" ", "")+binding.anio.getSelectedItem().toString())) {
                     camion = temp;
+                    break;
+                }
             }
             if(camion == null) {
                 barChart.setVisibility(View.INVISIBLE);
                 return;
             }
+            barChart.removeAllViews();
             List<BarEntry> entries = new ArrayList<>();
             for (int i = 0; i < camion.getDatos().size(); i++) {
                 entries.add(new BarEntry(i + 1, camion.getDatos().get(i).get(categoria)));

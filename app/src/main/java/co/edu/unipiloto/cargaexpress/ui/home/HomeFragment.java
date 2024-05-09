@@ -142,7 +142,8 @@ public class HomeFragment extends Fragment {
                     result.getString("fechaRecogida"), result.getString("horaRecogida"),
                     result.getString("fechaEntrega"), result.getString("especificaciones"),
                     result.getLong("comerciante"), result.getLong("conductor"), result.getString("estado"),
-                    result.getDouble("latitud"), result.getDouble("longitud"));
+                    result.getDouble("latitud"), result.getDouble("longitud"),
+                    result.getLong("incidencias"));
             if(user.getRol().equals("Conductor"))
                 if(temp.getEstado().equals("En viaje") || temp.getEstado().equals("Incidencia") || temp.getEstado().equals("En recorrido alterno"))
                     rastreo(temp);

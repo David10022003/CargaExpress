@@ -24,6 +24,7 @@ public class Carga implements Parcelable{
     private long cedulaComerciante;
     private long cedulaConductor;
 
+    private long incidencias;
     private String estado;
 
     public Carga() {}
@@ -31,7 +32,7 @@ public class Carga implements Parcelable{
     public Carga(String codigo, String tipoCarga, long peso, String dimensiones, String direccionOrigen,
                  String ciudadOrigen, String direccionDestino, String ciudadDestino, String fechaPublicada,
                  String fechaRecogida, String horaRecogida, String fechaEntrega, String especificaciones, long cedulaComerciante,
-                 long cedulaConductor, String estado, double latitud, double longitud) {
+                 long cedulaConductor, String estado, double latitud, double longitud, long incidencias) {
         this.codigo = codigo;
         this.tipoCarga = tipoCarga;
         this.peso = peso;
@@ -50,6 +51,15 @@ public class Carga implements Parcelable{
         this.latitud = latitud;
         this.longitud = longitud;
         this.estado = estado;
+        this.incidencias = incidencias;
+    }
+
+    public long getIncidencias() {
+        return incidencias;
+    }
+
+    public void setIncidencias(long incidencias) {
+        this.incidencias = incidencias;
     }
 
     public double getLatitud() {
@@ -219,6 +229,7 @@ public class Carga implements Parcelable{
         this.estado = in.readString();
         this.latitud = in.readDouble();
         this.longitud = in.readDouble();
+        this.incidencias = in.readLong();
 
     }
     @Override
@@ -246,6 +257,7 @@ public class Carga implements Parcelable{
         dest.writeString(estado);
         dest.writeDouble(latitud);
         dest.writeDouble(longitud);
+        dest.writeLong(incidencias);
     }
 
     public static final Parcelable.Creator<Carga> CREATOR = new Creator<Carga>() {

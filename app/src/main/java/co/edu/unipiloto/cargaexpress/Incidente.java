@@ -1,5 +1,6 @@
 package co.edu.unipiloto.cargaexpress;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -11,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -21,13 +23,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,18 +142,54 @@ public class Incidente extends AppCompatActivity {
         usuarioData.put("imagenes", img);
         database.collection("incidencias").document().set(usuarioData);
         carga.setEstado("Incidencia");
+        carga.setIncidencias(carga.getIncidencias()+1);
         HomeFragment.setCargas(carga);
         usuarioData = new HashMap<>();
         usuarioData.put("estado", "Incidencia");
+        usuarioData.put("incidencias", carga.getIncidencias());
         database.collection("cargas").document(carga.getCodigo()).update(usuarioData);
-        carga.setEstado("Incidencia");
         HomeFragment.setCargas(carga);
+        actualizarComerciante();
         finish();
         Intent intent = new Intent(this, AplicarCarga.class);
         intent.putExtra("user", usuario);
         intent.putExtra("carga", carga);
         startActivity(intent);
 
+    }
+
+    private void actualizarComerciante() {
+        DocumentReference docRef = database.collection("estadisicas").document(carga.getCedulaComerciante()+""+ Calendar.getInstance().get(Calendar.YEAR));
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        String[] monthNames = {
+                "enero", "febrero", "marzo", "abril", "mayo", "junio",
+                "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"};
+        database.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                DocumentSnapshot snapshot = transaction.get(docRef);
+                Log.d("AplicarCarga", "Transacción completada con éxito entrando en if");
+                final List<Long> arregloActual = (List<Long>) snapshot.get(monthNames[month]);
+                arregloActual.set(3, arregloActual.get(3) +1);
+                Map<String, Object> updateData = new HashMap<>();
+                updateData.put(monthNames[month], arregloActual);
+
+                Log.d("AplicarCarga", "Transacción completada con éxito actualizar estadisticas exists" + arregloActual.size());
+                transaction.update(docRef, monthNames[month], arregloActual);
+
+                return null;
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("AplicarCarga", "Transacción completada con éxito");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("AplicarCarga", "Error en la transacción", e);
+            }
+        });
     }
 
     private String comprimirImagen(Uri imageUri) {

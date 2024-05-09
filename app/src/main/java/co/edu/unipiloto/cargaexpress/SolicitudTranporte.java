@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
@@ -33,9 +35,14 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -376,6 +383,7 @@ public class SolicitudTranporte extends AppCompatActivity {
         cargaData.put("latitud", latitud);
         cargaData.put("longitud", longitud);
         cargaData.put("estado", "publicado");
+        cargaData.put("incidencias", 0);
 
         CollectionReference cargasRef = database.collection("cargas");
         cargasRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -393,18 +401,120 @@ public class SolicitudTranporte extends AppCompatActivity {
                                     if (querySnapshot != null) {
                                         String idCarga = cedComerciante + "-" + (querySnapshot.size() + 1);
                                         database.collection("cargas").document(idCarga).set(cargaData);
+                                        actualizarEstadisticas();
 
                                     }
                                 } else
                                     Log.d("SolicitudTransporte", "Error getting documents: ", task.getException());
                             }
                         });
-                    } else
-                        database.collection("cargas").document(cedComerciante +"-1").set(cargaData);
+                    } else {
+                        database.collection("cargas").document(cedComerciante + "-1").set(cargaData);
+                        actualizarEstadisticas();
+                    }
+
                 } else
                     Log.e("Firestore", "Error al obtener documentos: ", task.getException());
             }
         });
+    }
+
+    private void actualizarEstadisticas() {
+        String cedula = "";
+        cedula = cedComerciante+""+Calendar.getInstance().get(Calendar.YEAR);
+        final String id = cedula;
+
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        String[] monthNames = {
+                "enero", "febrero", "marzo", "abril", "mayo", "junio",
+                "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"};
+
+        DocumentReference docRef = database.collection("estadisicas").document(id);
+        database.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                DocumentSnapshot snapshot = transaction.get(docRef);
+                Log.d("AplicarCarga", "Transacción completada con éxito entrando en if");
+                verficarExistencia(snapshot, monthNames, month, docRef, transaction, id);
+
+                return null;
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("AplicarCarga", "Transacción completada con éxito");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w("AplicarCarga", "Error en la transacción", e);
+            }
+        });
+    }
+    private boolean ejecutar = true;
+    private void verficarExistencia(DocumentSnapshot snapshot, String[] monthNames, int month,DocumentReference docRef, Transaction transaction, String id) {
+        if(ejecutar)
+            ejecutar = false;
+        else
+            return;
+        if (snapshot.exists()) {
+            final List<Long> arregloActual = (List<Long>) snapshot.get(monthNames[month]);
+            arregloActual.set(0, arregloActual.get(0) +1);
+            arregloActual.set(2, arregloActual.get(2) +1);
+            Map<String, Object> updateData = new HashMap<>();
+            updateData.put(monthNames[month], arregloActual);
+
+            Log.d("AplicarCarga", "Transacción completada con éxito actualizar estadisticas exists" + arregloActual.size());
+            transaction.update(docRef, monthNames[month], arregloActual);
+
+        }
+        else {
+            Map<String, Object> datosDocumento = new HashMap<>();
+            List<Long> nuevosDatos = new ArrayList<>();
+            for(int i = 0; i < 11; i++) {
+                nuevosDatos = new ArrayList<>();
+                if (i == month) {
+                    nuevosDatos.add(1L);
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(1L);
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(0L);
+                    Log.d("AplicarCarga", "Transacción completada con éxito estadisticas no exists " + nuevosDatos.size());
+                }
+                else  {
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(0L);
+                    nuevosDatos.add(0L);
+                }
+                datosDocumento.put(monthNames[i], nuevosDatos);
+            }
+            Log.d("AplicarCarga", "Transacción completada con éxito estadisticas no exists");
+            guardarColeccion(datosDocumento, id);
+        }
+    }
+    private void guardarColeccion(Map<String, Object> datosDocumento, String id) {
+
+        database.collection("estadisicas")
+                .document(id)
+                .set(datosDocumento)
+                .addOnSuccessListener(new OnSuccessListener() {
+                    @Override
+                    public void onSuccess(Object o) {
+                        Log.d("AplicarCarga", "Transacción completada con éxito crear collection " + datosDocumento.size());
+                        recreate();
+
+                    }
+
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("AplicarCarga", "Transacción completada con éxito denegar collection");
+                    }
+                });
+
     }
 
     public void misPublicacionesView (View view) {
