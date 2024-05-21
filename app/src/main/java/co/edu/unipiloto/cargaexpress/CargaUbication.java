@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -14,8 +15,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.EncodedPolyline;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import co.edu.unipiloto.cargaexpress.databinding.ActivityCargaUbicationBinding;
 
@@ -42,6 +53,7 @@ public class CargaUbication extends FragmentActivity implements OnMapReadyCallba
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
     }
 
     /**
@@ -65,13 +77,16 @@ public class CargaUbication extends FragmentActivity implements OnMapReadyCallba
                         if (location != null) {
                             LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                             mMap.setMyLocationEnabled(true);
-                            LatLng ubication = new LatLng(carga.getLatitud(), carga.getLongitud());
-                            MarkerOptions marker = new MarkerOptions()
-                                    .position(ubication)
-                                    .title("Ubicacion carga")
-                                    .snippet(carga.getCodigo());
-                            mMap.addMarker(marker);
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+                            String estado = carga.getEstado();
+                            String rol = carga_express.user.getRol();
+                            if (!estado.equals("En espera del comerciante") || !estado.equals("Finalizado")){
+                                mostrarRuta();
+                            }
+                            if (!rol.equals("Conductor")) {
+                                marcadorUbicacionCarga();
+                            }
+
                         } else {
                             // Si no se puede obtener la ubicación actual, muestra un mensaje de advertencia
                             Toast.makeText(this, "No se pudo obtener la ubicación actual", Toast.LENGTH_SHORT).show();
@@ -83,10 +98,54 @@ public class CargaUbication extends FragmentActivity implements OnMapReadyCallba
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSION_REQUEST_CODE);
         }
+    }
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    private void marcadorUbicacionCarga () {
+        LatLng ubication = new LatLng(carga.getLatitud(), carga.getLongitud());
+        MarkerOptions marker = new MarkerOptions()
+                .position(ubication)
+                .title("Ubicacion carga")
+                .snippet(carga.getCodigo());
+        mMap.addMarker(marker);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ubication, 15));
+    }
+
+    private void mostrarRuta () {
+        String origen = carga.getDireccionOrigen()+","+carga.getCiudadOrigen();
+        String destino = carga.getDireccionDestino()+","+carga.getCiudadDestino();
+
+        GeoApiContext context = new GeoApiContext.Builder()
+                .apiKey("AIzaSyClz_VQvzrSHIpLESzMFzyvaeE_JjmC6LI")
+                .build();
+
+        new Thread(() -> {
+            try {
+                DirectionsResult result = DirectionsApi.newRequest(context)
+                        .origin(origen)
+                        .destination(destino)
+                        .await();
+
+                runOnUiThread(() -> {
+                    if (result.routes != null && result.routes.length > 0) {
+                        DirectionsRoute route = result.routes[0];
+                        EncodedPolyline polyline = route.overviewPolyline;
+                        if (polyline != null) {
+                            List<LatLng> points = new ArrayList<>();
+                            for (com.google.maps.model.LatLng latLng : polyline.decodePath()) {
+                                points.add(new LatLng(latLng.lat, latLng.lng));
+                            }
+                            mMap.addPolyline(new PolylineOptions().addAll(points));
+                            mMap.addMarker(new MarkerOptions().position(points.get(0)).title("Origen").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                            mMap.addMarker(new MarkerOptions().position(points.get(points.size() - 1)).title("Destino").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(points.get(0), 10));
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(CargaUbication.this, "Error mostrarRuta: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        }).start();
     }
 }
