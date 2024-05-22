@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -134,7 +135,7 @@ public class CargaUbication extends FragmentActivity implements OnMapReadyCallba
                             for (com.google.maps.model.LatLng latLng : polyline.decodePath()) {
                                 points.add(new LatLng(latLng.lat, latLng.lng));
                             }
-                            mMap.addPolyline(new PolylineOptions().addAll(points));
+                            mMap.addPolyline(new PolylineOptions().addAll(points).color(Color.BLUE));
                             mMap.addMarker(new MarkerOptions().position(points.get(0)).title("Origen").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                             mMap.addMarker(new MarkerOptions().position(points.get(points.size() - 1)).title("Destino").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(points.get(0), 10));
