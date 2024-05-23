@@ -81,13 +81,10 @@ public class CargaUbication extends FragmentActivity implements OnMapReadyCallba
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
                             String estado = carga.getEstado();
                             String rol = carga_express.user.getRol();
+                            marcadorUbicacionCarga();
                             if (!estado.equals("En espera del comerciante") || !estado.equals("Finalizado")){
                                 mostrarRuta();
                             }
-                            if (!rol.equals("Conductor")) {
-                                marcadorUbicacionCarga();
-                            }
-
                         } else {
                             // Si no se puede obtener la ubicación actual, muestra un mensaje de advertencia
                             Toast.makeText(this, "No se pudo obtener la ubicación actual", Toast.LENGTH_SHORT).show();
@@ -136,7 +133,8 @@ public class CargaUbication extends FragmentActivity implements OnMapReadyCallba
                                 points.add(new LatLng(latLng.lat, latLng.lng));
                             }
                             mMap.addPolyline(new PolylineOptions().addAll(points).color(Color.BLUE));
-                            mMap.addMarker(new MarkerOptions().position(points.get(0)).title("Origen").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                            if (!carga.getEstado().equals("publicado"))
+                                mMap.addMarker(new MarkerOptions().position(points.get(0)).title("Origen").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                             mMap.addMarker(new MarkerOptions().position(points.get(points.size() - 1)).title("Destino").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(points.get(0), 10));
                         }
