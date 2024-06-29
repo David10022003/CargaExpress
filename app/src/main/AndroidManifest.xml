@@ -42,7 +42,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyClz_VQvzrSHIpLESzMFzyvaeE_JjmC6LI" />
+            android:value="YOUR_API_KEY" />
 
         <activity
             android:name=".CargaUbication"
